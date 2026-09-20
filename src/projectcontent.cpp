@@ -1,6 +1,4 @@
 #include "projectcontent.hpp"
 
-std::string ProjectContent::display()
-{
-	return "Idk";
-}
+std::string ProjectContent::display() { return "Idk"; }
+
