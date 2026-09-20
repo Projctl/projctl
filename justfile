@@ -6,8 +6,8 @@ configure:
 build: configure
     cmake --build build
 
-run: build
-    ./build/projctl
+run *args: build
+    ./build/projctl {{args}}
 
 clean:
     rm -rf build
