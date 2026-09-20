@@ -15,6 +15,7 @@ add_executable(projctl
 add_library(projctl_core
 	src/projctl.cpp
 	src/projectcontent.cpp
+	src/systeminterface.cpp
 )
 
 target_include_directories(projctl_core
