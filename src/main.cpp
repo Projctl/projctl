@@ -21,11 +21,11 @@ int main(const int argc, const char **argv) {
 			proj_ctl.project_status(std::string(argv[arg_iterator++]));
 		}
 		if (command == "add") {
-			if (argc < arg_iterator + 1 ) {
+			if (argc < arg_iterator) {
 				std::print("You're missing some arguments!");
 				continue;
 			}
-			if (argv[arg_iterator++] == ".") {
+			if (std::string(argv[arg_iterator++]).contains('.')) {
 				proj_ctl.project_add_current();
 				continue;
 			} else --arg_iterator;

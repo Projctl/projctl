@@ -23,7 +23,7 @@ ProjectType detect_project_type(const std::filesystem::path& path) {
 } // namespace
 
 ProjCtl::ProjCtl() {
-	config_dir = "/home/evrandil/.config/projctl";
+	config_dir = system_interface.get_config_home()/"projctl";
 	load_projects();
 }
 
@@ -71,17 +71,17 @@ void ProjCtl::project_status(const std::string &name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 	const ProjectContent& content = (*project)->second;
-	std::println("{}{:<10}{}", MARGIN, "Name:", (*project)->first);
-	std::println("{}{:<10}{}", MARGIN, "Path:", content.path.string());
-	std::println("{}{:<10}{}", MARGIN, "Exists:", std::filesystem::exists(content.path) ? "Yes" : "No");
-	std::println("{}{:<10}{}", MARGIN, "Type:", project_type_to_string(content.type));
+	std::println("{}{:<{}}{}", MARGIN, "Name:", NAME_WIDTH, (*project)->first);
+	std::println("{}{:<{}}{}", MARGIN, "Path:", NAME_WIDTH, content.path.string());
+	std::println("{}{:<{}}{}", MARGIN, "Exists:", NAME_WIDTH, std::filesystem::exists(content.path) ? "Yes" : "No");
+	std::println("{}{:<{}}{}", MARGIN, "Type:", NAME_WIDTH, project_type_to_string(content.type));
 	bool is_git = std::filesystem::exists(content.path / ".git");
-	std::println("{}{:<10}{}", MARGIN, "Git:", is_git ? "Yes" : "No");
+	std::println("{}{:<{}}{}", MARGIN, "Git:", NAME_WIDTH, is_git ? "Yes" : "No");
 	if (!is_git) return;
 	std::optional<std::string> branch_output = system_interface.run_command(std::format("git -C \"{}\" branch --show-current", content.path.string()));
-	std::println("{}{:<10}{}", MARGIN, "Branch:", branch_output ? *branch_output : "----");
+	std::println("{}{:<{}}{}", MARGIN, "Branch:", NAME_WIDTH, branch_output ? *branch_output : "----");
 	std::optional<std::string> remote_output = system_interface.run_command(std::format("git -C \"{}\" remote get-url origin", content.path.string()));
-	std::println("{}{:<10}{}", MARGIN, "Remote:", remote_output ? *remote_output : "----");
+	std::println("{}{:<{}}{}", MARGIN, "Remote:", NAME_WIDTH, remote_output ? *remote_output : "----");
 }
 
 void ProjCtl::project_add(const std::string name, std::filesystem::path path) {
@@ -98,6 +98,10 @@ void ProjCtl::project_add(const std::string name, std::filesystem::path path) {
 void ProjCtl::project_add_current() {
 	std::filesystem::path path = std::filesystem::current_path();
 	std::string name = std::filesystem::current_path().filename().string();
+	if (projects.contains(name)) {
+		std::print("{}Project with name {} already exists!", MARGIN, name);
+		return;
+	}
 	std::pair<std::string, ProjectContent> new_project = { name, { path, detect_project_type(path) } };
 	projects.emplace(new_project);
 	std::println("{}Added project:\t{}", MARGIN, new_project.first);
@@ -116,7 +120,7 @@ void ProjCtl::path_show(const std::string &name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 
-	std::println("{}{:<20}{}\n\n{}{}{}", MARGIN, "Path for:", name, MARGIN, MARGIN, (*project)->second.path.string());
+	std::println("{}{:<{}}{}\n\n{}{}{}", MARGIN, "Path for:", NAME_WIDTH, name, MARGIN, MARGIN, (*project)->second.path.string());
 }
 
 void ProjCtl::project_open(const std::string &name) {

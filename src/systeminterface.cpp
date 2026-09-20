@@ -22,3 +22,15 @@ std::optional<std::string> SystemInterface::run_command(const std::string &comma
 }
 
 int SystemInterface::run_interactive(const std::string &command) { return std::system(command.c_str()); }
+
+std::filesystem::path SystemInterface::get_config_home() {
+	const char* xdg = std::getenv("XDG_CONFIG_HOME");
+
+	if (xdg && *xdg != '\0') return std::filesystem::path{xdg};
+
+	const char* home = std::getenv("HOME");
+
+	if (home && *home != '\0') return std::filesystem::path{home}/".config";
+
+	return {};
+}
