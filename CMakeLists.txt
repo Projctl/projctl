@@ -11,3 +11,26 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_executable(projctl
     src/main.cpp
 )
+
+add_library(projctl_core
+	src/projctl.cpp
+	src/projectcontent.cpp
+)
+
+target_include_directories(projctl_core
+	PUBLIC
+		${PROJECT_SOURCE_DIR}/include
+)
+
+target_compile_options(projctl_core PRIVATE
+	-Wall
+	-Wextra
+	-Wpedantic
+)
+
+target_link_libraries(projctl
+	PRIVATE
+		projctl_core
+)
+
+
