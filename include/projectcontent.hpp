@@ -59,10 +59,33 @@ constexpr std::optional<std::string_view> build_command_for(ProjectType type) {
 	return std::nullopt;
 }
 
+constexpr std::optional<std::string_view> run_command_for(ProjectType type) {
+	switch (type) {
+	case ProjectType::Rust:
+		return "cargo run";
+
+	case ProjectType::CMake:
+		return std::nullopt;
+
+	case ProjectType::Node:
+		return "npm start";
+
+	case ProjectType::Zig:
+		return "zig run";
+
+	case ProjectType::Python:
+	case ProjectType::Unknown:
+		return std::nullopt;
+	}
+
+	return std::nullopt;
+}
+
 struct ProjectContent
 {
 	std::filesystem::path path;
 	ProjectType type;
-	std::optional<std::string> custom_build_command = std::nullopt;
+	std::optional<std::string> build_command = std::nullopt;
+	std::optional<std::string> run_command = std::nullopt;
 	std::string display();
 };

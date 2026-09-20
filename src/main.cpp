@@ -66,6 +66,13 @@ int main(const int argc, const char **argv) {
 			}
 			proj_ctl.project_build(std::string(argv[arg_iterator++]));
 		}
+		if (command == "run") {
+			if (argc < arg_iterator + 1) {
+				std::print("You're missing some arguments!");
+				continue;
+			}
+			proj_ctl.project_run(std::string(argv[arg_iterator++]));
+		}
 	}
 	std::print("\n\n");
 

@@ -4,7 +4,10 @@ BasedOnStyle: LLVM
 IndentWidth: 4
 TabWidth: 4
 UseTab: ForIndentation
-BreakBeforeBraces: Attach
 
+BreakBeforeBraces: Attach
 ColumnLimit: 300
 
+PointerAlignment: Left
+ReferenceAlignment: Left
+DerivePointerAlignment: false

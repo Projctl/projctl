@@ -108,7 +108,7 @@ void ProjCtl::project_add_current() {
 	std::println("{}With path:\t\t{}", MARGIN, new_project.second.path.string());
 }
 
-void ProjCtl::project_remove(const std::string &name) {
+void ProjCtl::project_remove(const std::string& name) {
 	if (projects.erase(name) == 0) {
 		std::print("{}Project with name {} doesn't exist!", MARGIN, name);
 		return;
@@ -116,39 +116,62 @@ void ProjCtl::project_remove(const std::string &name) {
 	std::println("{}Removed project:\t{}", MARGIN, name);
 }
 
-void ProjCtl::path_show(const std::string &name) {
+void ProjCtl::path_show(const std::string& name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 
 	std::println("{}{:<{}}{}\n\n{}{}{}", MARGIN, "Path for:", NAME_WIDTH, name, MARGIN, MARGIN, (*project)->second.path.string());
 }
 
-void ProjCtl::project_open(const std::string &name) {
+void ProjCtl::project_open(const std::string& name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 
 	system_interface.run_interactive(std::format("nvim \"{}\"", (*project)->second.path.string()));
 }
 
-void ProjCtl::project_build(const std::string &name) {
+void ProjCtl::project_build(const std::string& name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 	const ProjectContent& content = (*project)->second;
 	std::optional<std::string_view> command_option;
 
-	if (content.custom_build_command) {
-		command_option = content.custom_build_command;
-		goto build_run;
+	if (content.build_command) {
+		command_option = content.build_command;
+		goto build;
 	}
 
 	command_option = build_command_for(content.type);
+build:
 	if (!command_option) {
 		std::println("{}There's no default command for {} as type of project {}", MARGIN, project_type_to_string(content.type), name);
 		return;
 	}
 
-build_run:
-	std::string command = std::string("cd ").append(content.path.string()).append(" && ").append(std::string(*command_option));
+	std::string command = std::string("cd ").append(content.path.string()).append(" && ").append(*command_option);
+
+	std::cout << *system_interface.run_command(command);
+}
+
+void ProjCtl::project_run(const std::string& name) {
+	ProjectIteratorResult project = project_find(name);
+	if (!project) return;
+	const ProjectContent& content = (*project)->second;
+	std::optional<std::string> command_option;
+
+	if (content.run_command) {
+		command_option = content.run_command;
+		goto run;
+	}
+
+	command_option = run_command_for(content.type);
+run:
+	if (!command_option) {
+		std::println("{}There's no default command for {} as type of project {}", MARGIN, project_type_to_string(content.type), name);
+		return;
+	}
+
+	std::string command = std::string("cd ").append(content.path.string()).append(" && ").append(*command_option);
 
 	std::cout << *system_interface.run_command(command);
 }

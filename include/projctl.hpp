@@ -18,12 +18,13 @@ class ProjCtl
 	public:
 	ProjCtl();
 	~ProjCtl();
+	void list_projects();
+	void path_show(const std::string&);
 	void project_add(const std::string, std::filesystem::path);
 	void project_add_current();
 	void project_remove(const std::string&);
-	void list_projects();
-	void path_show(const std::string&);
 	void project_status(const std::string&);
 	void project_open(const std::string&);
 	void project_build(const std::string&);
+	void project_run(const std::string&);
 };
