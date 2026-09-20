@@ -20,10 +20,21 @@ ProjectType detect_project_type(const std::filesystem::path& path) {
 	return ProjectType::Unknown;
 }
 
+std::string trim(std::string_view text) {
+	std::size_t first = text.find_first_not_of(" \t\r\n");
+
+	if (first == std::string_view::npos) return "";
+
+	std::size_t last = text.find_last_not_of(" \t\r\n");
+
+	return std::string(text.substr(first, last - first + 1));
+}
+
 } // namespace
 
 ProjCtl::ProjCtl() {
 	config_dir = system_interface.get_config_home()/"projctl";
+	data_dir = system_interface.get_cache_home()/"projctl";
 	load_projects();
 }
 
@@ -31,21 +42,75 @@ ProjCtl::~ProjCtl() { save_projects(); }
 
 
 void ProjCtl::load_projects() {
-	std::ifstream projects(config_dir/"projects.txt", std::ios::in);
+	std::ifstream projects(data_dir/"projects.ini", std::ios::in);
 
-	std::string path_str;
+	std::string line;
 	std::string name;
-	while (std::getline(projects, name, '\t')) {
-		std::getline(projects, path_str);
-		this->projects.emplace(name, ProjectContent { std::filesystem::path(path_str), detect_project_type(std::filesystem::path(path_str)) } );
+	std::string path_str;
+	std::string build_command;
+	std::string run_command;
+	std::size_t separator;
+	while (std::getline(projects, line)) {
+		line = trim(line);
+		if (line.empty()) continue;
+		switch (line.front()) {
+			case '[':
+				if (!name.empty()) {
+					this->projects.emplace(
+							name,
+							ProjectContent {
+							std::filesystem::path { path_str },
+							detect_project_type(path_str),
+							build_command.empty() ? std::nullopt : std::optional<std::string> { build_command },
+							run_command.empty() ? std::nullopt : std::optional<std::string> { run_command },
+							}
+							);
+					path_str.clear();
+					build_command.clear();
+					run_command.clear();
+				}
+				name = trim(line.substr(1, line.size() - 2));
+				continue;
+			case 'p':
+				separator = line.find('=');
+				path_str = trim(line.substr(separator + 1));
+				continue;
+			case 'r':
+				separator = line.find('=');
+				run_command = trim(line.substr(separator + 1));
+				continue;
+			case 'b':
+				separator = line.find('=');
+				build_command = trim(line.substr(separator + 1));
+				continue;
+		}
+	}
+	if (!name.empty()) {
+		this->projects.emplace(
+				name,
+				ProjectContent {
+				std::filesystem::path { path_str },
+				detect_project_type(path_str),
+				build_command.empty()?std::nullopt:std::optional<std::string> { build_command },
+				run_command.empty()?std::nullopt:std::optional<std::string> { run_command },
+				}
+				);
 	}
 }
 
 void ProjCtl::save_projects() {
-	std::ofstream projects(config_dir/"projects.txt");
+	std::ofstream projects(data_dir/"projects.ini");
 
-	for (const decltype(this->projects)::value_type &project : this->projects)
-		projects << project.first << '\t' << project.second.path.string() << '\n';
+	for (const decltype(this->projects)::value_type &project : this->projects) {
+		projects << '[' << project.first << "]\n";
+		projects << "path=" << project.second.path.string() << '\n';
+
+		if (project.second.build_command) projects << "build=" << *project.second.build_command << '\n' ;
+
+		if (project.second.run_command) projects << "run=" << *project.second.run_command << '\n';
+
+		projects << '\n';
+	}
 }
 
 void ProjCtl::list_projects() {
@@ -54,8 +119,7 @@ void ProjCtl::list_projects() {
 	else
 		std::println("{}{}{:<{}}{}\n", MARGIN, MARGIN, "Name", NAME_WIDTH, "Path");
 
-	for (const decltype(this->projects)::value_type &project : projects)
-		std::println("{}{}{:<{}}{}", MARGIN, MARGIN, project.first, NAME_WIDTH, project.second.path.string());
+	for (const decltype(this->projects)::value_type &project : projects) std::println("{}{}{:<{}}{}", MARGIN, MARGIN, project.first, NAME_WIDTH, project.second.path.string());
 }
 
 ProjectIteratorResult ProjCtl::project_find(const std::string &name) {
