@@ -10,6 +10,7 @@ class ProjCtl
 {
 	std::map<std::string, ProjectContent> projects;
 	std::filesystem::path config_dir;
+	std::filesystem::path data_dir;
 	SystemInterface system_interface;
 	void load_projects();
 	void save_projects();
