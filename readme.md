@@ -7,3 +7,8 @@ So here it is wrapper for git management \(haven't rly done anything on CodeBerg
 Tho honestly it's useful not only for git projects
 
 `projctl branch has to be used at the end if you want branches to be listed`
+
+```
+just build
+sudo cp build/projctl /usr/local/bin
+```
