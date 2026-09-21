@@ -33,6 +33,7 @@ class ProjCtl
 	void run(const std::string&);
 	void git_commit(const std::string&, std::string_view);
 	void git_push(const std::string&);
+	void git_push_branch(const std::string&);
 	void git_pull(const std::string&);
 	void git_branch_list(const std::string&);
 	void git_branch(const std::string&, std::string_view);

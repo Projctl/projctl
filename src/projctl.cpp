@@ -277,6 +277,28 @@ void ProjCtl::git_push(const std::string& name) {
 	std::println("{}", *result);
 }
 
+void ProjCtl::git_push_branch(const std::string& name) {
+	ProjectIteratorResult project = project_find(name);
+	if (!project) return;
+	const ProjectContent& content = (*project)->second;
+
+	std::expected<std::string, std::string> result = git_interface.branch(content);
+	if (!result) {
+		std::println("{}", result.error());
+	}
+
+	std::string branch = *result;
+
+	result = git_interface.push_branch(content, branch);
+
+	if (!result) {
+		std::println("{}", result.error());
+		return;
+	}
+
+	std::println("{}", *result);
+}
+
 void ProjCtl::git_pull(const std::string& name) {
 	auto pull_one = [&](const std::string& project_name, const ProjectContent& content) {
 		std::println("Pulling: {}", project_name);

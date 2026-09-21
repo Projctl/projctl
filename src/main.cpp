@@ -132,27 +132,32 @@ int main(const int argc, const char **argv) {
 									 }
 			case CommandOption::Commit: {
 											bool push = false;
-											if (std::string(argv[arg_iterator]) == "push") {
+											bool branch = false;
+											if (arg_iterator < argc && std::string(argv[arg_iterator]) == "push") {
 												push = true;
 												++arg_iterator;
-												if (arg_iterator + 1 >= argc) {
-													std::print("You're missing some arguments!");
-													continue;
+												if (arg_iterator < argc && std::string(argv[arg_iterator]) == "branch") {
+													branch = true;
+													++arg_iterator;
 												}
-											} else if (arg_iterator + 1 >= argc) {
+											}
+											if (arg_iterator + 1 >= argc) {
 												std::print("You're missing some arguments!");
 												continue;
 											}
 											std::string name = argv[arg_iterator++];
 											std::string_view message = argv[arg_iterator++];
 											proj_ctl.git_commit(name, message);
-											if (push) proj_ctl.git_push(name);
+											if (push) {
+												if(branch) proj_ctl.git_push_branch(name);
+												else proj_ctl.git_push(name);
+											}
 											continue;
 										}
 			case CommandOption::Push: {
 										  if (arg_iterator < argc && std::string(argv[arg_iterator]) == "branch") {
 											  ++arg_iterator;
-											  //proj_ctl.git_push_branch(std::string(argv[arg_iterator++]));
+											  proj_ctl.git_push_branch(std::string(argv[arg_iterator++]));
 											  continue;
 										  } else if (arg_iterator >= argc) {
 											  std::print("You're missing some arguments!");
