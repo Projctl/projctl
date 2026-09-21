@@ -54,7 +54,11 @@ int main(const int argc, const char **argv) {
 		std::string command = argv[arg_iterator++];
 		switch (get_option_from_command(command)) {
 			case CommandOption::List: {
-										  proj_ctl.list();
+										  if (arg_iterator < argc && argv[arg_iterator][0] == 'g') {
+											  ++arg_iterator;
+											  proj_ctl.list_gits();
+										  }
+										  else proj_ctl.list();
 										  continue;
 									  }
 			case CommandOption::Status: {
