@@ -11,6 +11,7 @@ enum class CommandOption {
 	Remove,
 	Open,
 	Build,
+	Branch,
 	Run,
 	Commit,
 	Push,
@@ -37,6 +38,7 @@ namespace {
 			case 'o':
 				return CommandOption::Open;
 			case 'b':
+				if (command == "branch") return CommandOption::Branch;
 				return CommandOption::Build;
 			case 'c':
 				return CommandOption::Commit;
@@ -132,7 +134,7 @@ int main(const int argc, const char **argv) {
 											bool push = false;
 											if (std::string(argv[arg_iterator]) == "push") {
 												push = true;
-												arg_iterator++;
+												++arg_iterator;
 												if (arg_iterator + 1 >= argc) {
 													std::print("You're missing some arguments!");
 													continue;
@@ -148,7 +150,11 @@ int main(const int argc, const char **argv) {
 											continue;
 										}
 			case CommandOption::Push: {
-										  if (arg_iterator >= argc) {
+										  if (arg_iterator < argc && std::string(argv[arg_iterator]) == "branch") {
+											  ++arg_iterator;
+											  //proj_ctl.git_push_branch(std::string(argv[arg_iterator++]));
+											  continue;
+										  } else if (arg_iterator >= argc) {
 											  std::print("You're missing some arguments!");
 											  continue;
 										  }
@@ -163,6 +169,20 @@ int main(const int argc, const char **argv) {
 										  proj_ctl.git_pull(std::string(argv[arg_iterator++]));
 										  continue;
 									  }
+			case CommandOption::Branch: {
+											if (arg_iterator >= argc) {
+												std::print("You're missing some arguments!");
+												continue;
+											}
+											if (arg_iterator + 1 == argc) {
+												proj_ctl.git_branch_list(std::string(argv[arg_iterator++]));
+												continue;
+											}
+											std::string name = std::string(argv[arg_iterator++]);
+											std::string_view branch = std::string_view(argv[arg_iterator++]);
+											proj_ctl.git_branch(name, branch);
+											continue;
+										}
 			case CommandOption::Idk: {
 										 std::print("Unrecognized command");
 										 continue;
