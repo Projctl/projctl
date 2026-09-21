@@ -198,7 +198,7 @@ void ProjCtl::open(const std::string& name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 
-	system_interface.run_interactive(std::format("nvim \"{}\"", (*project)->second.path.string()));
+	system_interface.run_interactive(std::format("cd \"{}\" && nvim .", (*project)->second.path.string()));
 }
 
 void ProjCtl::build(const std::string& name) {
