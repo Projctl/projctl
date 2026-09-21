@@ -11,5 +11,5 @@ class GitInterface {
 	public:
 	GitInterface(SystemInterface&);
 	std::optional<std::string> add(const ProjectContent&);
-	std::optional<std::string> commit(const ProjectContent&, const std::string_view&);
+	std::optional<std::string> commit(const ProjectContent&, std::string_view);
 };
