@@ -4,7 +4,6 @@
 #include <fstream>
 #include <print>
 #include <string_view>
-#include <iostream>
 
 using ProjectIteratorResult = std::optional<std::map<std::string, ProjectContent>::const_iterator>;
 
@@ -214,7 +213,7 @@ build:
 
 	std::string command = std::string("cd ").append(content.path.string()).append(" && ").append(*command_option);
 
-	std::cout << *system_interface.run(command);
+	std::println("{}", *system_interface.run(command));
 }
 
 void ProjCtl::run(const std::string& name) {
@@ -237,13 +236,20 @@ run:
 
 	std::string command = std::string("cd ").append(content.path.string()).append(" && ").append(*command_option);
 
-	std::cout << *system_interface.run(command);
+	std::println("{}", *system_interface.run(command));
 }
 
-void ProjCtl::git_commit(const std::string& name, const std::string_view& message) {
+void ProjCtl::git_commit(const std::string& name, std::string_view message) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 	const ProjectContent& content = (*project)->second;
 
-	std::cout << *git_interface.commit(content, message);
+	std::expected<std::string, std::string> result = git_interface.commit(content, message);
+
+	if (!result) {
+		std::println("There was some issue with git");
+		return;
+	}
+
+	std::println("{}", *result);
 }

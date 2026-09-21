@@ -30,5 +30,5 @@ class ProjCtl
 	void open(const std::string&);
 	void build(const std::string&);
 	void run(const std::string&);
-	void git_commit(const std::string&, const std::string_view&);
+	void git_commit(const std::string&, std::string_view);
 };
