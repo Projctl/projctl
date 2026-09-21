@@ -113,12 +113,21 @@ void ProjCtl::save() {
 }
 
 void ProjCtl::list() {
-	if (projects.empty())
-		std::println("There are no projects saved");
-	else
+	auto list_one = [&](const std::string& name, const ProjectContent& content) { std::println("{}{}{:<{}}{}", MARGIN, MARGIN, name, NAME_WIDTH, content.path.string()); };
+	if (projects.empty()) std::println("There are no projects saved");
+	else {
 		std::println("{}{}{:<{}}{}\n", MARGIN, MARGIN, "Name", NAME_WIDTH, "Path");
+		for (const decltype(projects)::value_type& project : projects) list_one(project.first, project.second);
+	}
 
-	for (const decltype(projects)::value_type &project : projects) std::println("{}{}{:<{}}{}", MARGIN, MARGIN, project.first, NAME_WIDTH, project.second.path.string());
+}
+
+void ProjCtl::list_gits() {
+	auto list_one_git = [this](const std::string& name, const ProjectContent& content){
+		if (git_interface.is_repo(content)) std::println("{}{}{:<{}}{:<50}{:<{}}{:<{}}", MARGIN, MARGIN, name, NAME_WIDTH, content.path.string(), *git_interface.branch(content), NAME_WIDTH, *git_interface.remote_short(content), NAME_WIDTH);
+	};
+	std::println("{}{}{:<{}}{:<50}{:<{}}{:<{}}\n", MARGIN, MARGIN, "Name", NAME_WIDTH, "Path", "Branch", NAME_WIDTH, "Repo", NAME_WIDTH);
+	for (const decltype(projects)::value_type& project : projects) list_one_git(project.first, project.second);
 }
 
 ProjectIteratorResult ProjCtl::project_find(const std::string &name) {
@@ -138,13 +147,12 @@ void ProjCtl::status(const std::string &name) {
 	std::println("{}{:<{}}{}", MARGIN, "Path:", NAME_WIDTH, content.path.string());
 	std::println("{}{:<{}}{}", MARGIN, "Exists:", NAME_WIDTH, std::filesystem::exists(content.path) ? "Yes" : "No");
 	std::println("{}{:<{}}{}", MARGIN, "Type:", NAME_WIDTH, project_type_to_string(content.type));
-	bool is_git = git_interface.is_repo(content);
-	std::println("{}{:<{}}{}", MARGIN, "Git:", NAME_WIDTH, is_git ? "Yes" : "No");
-	if (!is_git) return;
-	std::optional<std::string> branch_output = system_interface.run(std::format("git -C \"{}\" branch --show-current", content.path.string()));
-	std::println("{}{:<{}}{}", MARGIN, "Branch:", NAME_WIDTH, branch_output ? *branch_output : "----");
-	std::optional<std::string> remote_output = system_interface.run(std::format("git -C \"{}\" remote get-url origin", content.path.string()));
-	std::println("{}{:<{}}{}", MARGIN, "Remote:", NAME_WIDTH, remote_output ? *remote_output : "----");
+	std::expected<std::string, std::string> git = git_interface.remote_short(content);
+	std::println("{}{:<{}}{}", MARGIN, "Git:", NAME_WIDTH, git ? *git: git.error());
+	std::expected<std::string, std::string> branch = git_interface.branch(content);
+	std::println("{}{:<{}}{}", MARGIN, "Branch:", NAME_WIDTH, branch ? *branch : branch.error());
+	std::expected<std::string, std::string> remote = git_interface.remote(content);
+	std::println("{}{:<{}}{}", MARGIN, "Full remote:", NAME_WIDTH, remote ? *remote: remote.error());
 }
 
 void ProjCtl::add(const std::string name, std::filesystem::path path) {

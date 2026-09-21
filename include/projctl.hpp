@@ -22,6 +22,7 @@ class ProjCtl
 	ProjCtl();
 	~ProjCtl();
 	void list();
+	void list_gits();
 	void path_show(const std::string&);
 	void add(const std::string, std::filesystem::path);
 	void add_current();
