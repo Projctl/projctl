@@ -4,7 +4,6 @@
 #include <fstream>
 #include <print>
 #include <string_view>
-#include <iostream>
 
 using ProjectIteratorResult = std::optional<std::map<std::string, ProjectContent>::const_iterator>;
 
@@ -32,16 +31,16 @@ std::string trim(std::string_view text) {
 
 } // namespace
 
-ProjCtl::ProjCtl() {
-	config_dir = system_interface.get_config_home()/"projctl";
-	data_dir = system_interface.get_cache_home()/"projctl";
-	load_projects();
+ProjCtl::ProjCtl() : git_interface(system_interface) {
+	config_dir = system_interface.config_home()/"projctl";
+	data_dir = system_interface.cache_home()/"projctl";
+	load();
 }
 
-ProjCtl::~ProjCtl() { save_projects(); }
+ProjCtl::~ProjCtl() { save(); }
 
 
-void ProjCtl::load_projects() {
+void ProjCtl::load() {
 	std::ifstream projects(data_dir/"projects.ini", std::ios::in);
 
 	std::string line;
@@ -98,7 +97,7 @@ void ProjCtl::load_projects() {
 	}
 }
 
-void ProjCtl::save_projects() {
+void ProjCtl::save() {
 	std::ofstream projects(data_dir/"projects.ini");
 
 	for (const decltype(this->projects)::value_type &project : this->projects) {
@@ -113,7 +112,7 @@ void ProjCtl::save_projects() {
 	}
 }
 
-void ProjCtl::list_projects() {
+void ProjCtl::list() {
 	if (projects.empty())
 		std::println("There are no projects saved");
 	else
@@ -131,7 +130,7 @@ ProjectIteratorResult ProjCtl::project_find(const std::string &name) {
 	return project;
 }
 
-void ProjCtl::project_status(const std::string &name) {
+void ProjCtl::status(const std::string &name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 	const ProjectContent& content = (*project)->second;
@@ -142,13 +141,13 @@ void ProjCtl::project_status(const std::string &name) {
 	bool is_git = std::filesystem::exists(content.path / ".git");
 	std::println("{}{:<{}}{}", MARGIN, "Git:", NAME_WIDTH, is_git ? "Yes" : "No");
 	if (!is_git) return;
-	std::optional<std::string> branch_output = system_interface.run_command(std::format("git -C \"{}\" branch --show-current", content.path.string()));
+	std::optional<std::string> branch_output = system_interface.run(std::format("git -C \"{}\" branch --show-current", content.path.string()));
 	std::println("{}{:<{}}{}", MARGIN, "Branch:", NAME_WIDTH, branch_output ? *branch_output : "----");
-	std::optional<std::string> remote_output = system_interface.run_command(std::format("git -C \"{}\" remote get-url origin", content.path.string()));
+	std::optional<std::string> remote_output = system_interface.run(std::format("git -C \"{}\" remote get-url origin", content.path.string()));
 	std::println("{}{:<{}}{}", MARGIN, "Remote:", NAME_WIDTH, remote_output ? *remote_output : "----");
 }
 
-void ProjCtl::project_add(const std::string name, std::filesystem::path path) {
+void ProjCtl::add(const std::string name, std::filesystem::path path) {
 	if (projects.contains(name)) {
 		std::print("{}Project with name {} already exists!", MARGIN, name);
 		return;
@@ -159,7 +158,7 @@ void ProjCtl::project_add(const std::string name, std::filesystem::path path) {
 	std::println("{}Added project:\t{}", MARGIN, new_project.first);
 	std::println("{}With path:\t\t{}", MARGIN, new_project.second.path.string());
 }
-void ProjCtl::project_add_current() {
+void ProjCtl::add_current() {
 	std::filesystem::path path = std::filesystem::current_path();
 	std::string name = std::filesystem::current_path().filename().string();
 	if (projects.contains(name)) {
@@ -172,7 +171,7 @@ void ProjCtl::project_add_current() {
 	std::println("{}With path:\t\t{}", MARGIN, new_project.second.path.string());
 }
 
-void ProjCtl::project_remove(const std::string& name) {
+void ProjCtl::remove(const std::string& name) {
 	if (projects.erase(name) == 0) {
 		std::print("{}Project with name {} doesn't exist!", MARGIN, name);
 		return;
@@ -187,14 +186,14 @@ void ProjCtl::path_show(const std::string& name) {
 	std::println("{}{:<{}}{}\n\n{}{}{}", MARGIN, "Path for:", NAME_WIDTH, name, MARGIN, MARGIN, (*project)->second.path.string());
 }
 
-void ProjCtl::project_open(const std::string& name) {
+void ProjCtl::open(const std::string& name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 
 	system_interface.run_interactive(std::format("nvim \"{}\"", (*project)->second.path.string()));
 }
 
-void ProjCtl::project_build(const std::string& name) {
+void ProjCtl::build(const std::string& name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 	const ProjectContent& content = (*project)->second;
@@ -214,10 +213,10 @@ build:
 
 	std::string command = std::string("cd ").append(content.path.string()).append(" && ").append(*command_option);
 
-	std::cout << *system_interface.run_command(command);
+	std::println("{}", *system_interface.run(command));
 }
 
-void ProjCtl::project_run(const std::string& name) {
+void ProjCtl::run(const std::string& name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 	const ProjectContent& content = (*project)->second;
@@ -237,5 +236,20 @@ run:
 
 	std::string command = std::string("cd ").append(content.path.string()).append(" && ").append(*command_option);
 
-	std::cout << *system_interface.run_command(command);
+	std::println("{}", *system_interface.run(command));
+}
+
+void ProjCtl::git_commit(const std::string& name, std::string_view message) {
+	ProjectIteratorResult project = project_find(name);
+	if (!project) return;
+	const ProjectContent& content = (*project)->second;
+
+	std::expected<std::string, std::string> result = git_interface.commit(content, message);
+
+	if (!result) {
+		std::println("There was some issue with git");
+		return;
+	}
+
+	std::println("{}", *result);
 }
