@@ -118,6 +118,18 @@ std::expected<std::string, std::string> GitInterface::push(const ProjectContent&
 	return *result;
 }
 
+std::expected<std::string, std::string> GitInterface::push_branch(const ProjectContent& project, std::string_view branch) {
+	if (!is_repo(project)) return std::unexpected("Not a git repo");
+
+	std::string command = std::format("git -C \"{}\" push -u origin {}", project.path.string(), branch);
+
+	std::optional<std::string> result = system_interface.run(command);
+
+	if (!result) return std::unexpected("Git push failed");
+
+	return *result;
+}
+
 std::expected<std::string, std::string> GitInterface::pull(const ProjectContent& project) {
 	if (!is_repo(project)) return std::unexpected("Not a git repo");
 

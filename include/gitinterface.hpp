@@ -19,5 +19,6 @@ class GitInterface {
 	std::expected<std::string, std::string> remote_short(const ProjectContent&);
 	std::expected<std::string, std::string> commit(const ProjectContent&, std::string_view);
 	std::expected<std::string, std::string> push(const ProjectContent&);
+	std::expected<std::string, std::string> push_branch(const ProjectContent&, std::string_view);
 	std::expected<std::string, std::string> pull(const ProjectContent&);
 };
