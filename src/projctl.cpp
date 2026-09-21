@@ -118,7 +118,7 @@ void ProjCtl::list() {
 	else
 		std::println("{}{}{:<{}}{}\n", MARGIN, MARGIN, "Name", NAME_WIDTH, "Path");
 
-	for (const decltype(this->projects)::value_type &project : projects) std::println("{}{}{:<{}}{}", MARGIN, MARGIN, project.first, NAME_WIDTH, project.second.path.string());
+	for (const decltype(projects)::value_type &project : projects) std::println("{}{}{:<{}}{}", MARGIN, MARGIN, project.first, NAME_WIDTH, project.second.path.string());
 }
 
 ProjectIteratorResult ProjCtl::project_find(const std::string &name) {
@@ -138,7 +138,7 @@ void ProjCtl::status(const std::string &name) {
 	std::println("{}{:<{}}{}", MARGIN, "Path:", NAME_WIDTH, content.path.string());
 	std::println("{}{:<{}}{}", MARGIN, "Exists:", NAME_WIDTH, std::filesystem::exists(content.path) ? "Yes" : "No");
 	std::println("{}{:<{}}{}", MARGIN, "Type:", NAME_WIDTH, project_type_to_string(content.type));
-	bool is_git = std::filesystem::exists(content.path / ".git");
+	bool is_git = git_interface.is_repo(content);
 	std::println("{}{:<{}}{}", MARGIN, "Git:", NAME_WIDTH, is_git ? "Yes" : "No");
 	if (!is_git) return;
 	std::optional<std::string> branch_output = system_interface.run(std::format("git -C \"{}\" branch --show-current", content.path.string()));
@@ -267,4 +267,26 @@ void ProjCtl::git_push(const std::string& name) {
 	}
 
 	std::println("{}", *result);
+}
+
+void ProjCtl::git_pull(const std::string& name) {
+	auto pull_one = [&](const std::string& project_name, const ProjectContent& content) {
+		std::println("Pulling: {}", project_name);
+		std::expected<std::string, std::string> result = git_interface.pull(content);
+
+		if (!result) {
+			std::println("{}\n", result.error());
+			return;
+		}
+		std::println("{}\n", *result);
+	};
+
+	if (name == "--all") {
+		for (const decltype(projects)::value_type& project: projects) if (git_interface.is_repo(project.second)) pull_one(project.first, project.second);
+		return;
+	}
+	ProjectIteratorResult project = project_find(name);
+	if (!project) return;
+
+	pull_one((*project)->first, (*project)->second);
 }

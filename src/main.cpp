@@ -14,6 +14,7 @@ enum class CommandOption {
 	Run,
 	Commit,
 	Push,
+	Pull,
 	Idk
 };
 
@@ -28,6 +29,7 @@ namespace {
 				return CommandOption::Add;
 			case 'p':
 				if (command == "path") return CommandOption::Path;
+				if (command == "pull") return CommandOption::Pull;
 				return CommandOption::Push;
 			case 'r':
 				if (command == "run") return CommandOption::Run;
@@ -147,6 +149,14 @@ int main(const int argc, const char **argv) {
 											  continue;
 										  }
 										  proj_ctl.git_push(std::string(argv[arg_iterator++]));
+										  continue;
+									  }
+			case CommandOption::Pull: {
+										  if (arg_iterator >= argc) {
+											  std::print("You're missing some arguments!");
+											  continue;
+										  }
+										  proj_ctl.git_pull(std::string(argv[arg_iterator++]));
 										  continue;
 									  }
 			case CommandOption::Idk: {
