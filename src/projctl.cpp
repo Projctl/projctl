@@ -247,7 +247,22 @@ void ProjCtl::git_commit(const std::string& name, std::string_view message) {
 	std::expected<std::string, std::string> result = git_interface.commit(content, message);
 
 	if (!result) {
-		std::println("There was some issue with git");
+		std::println("{}", result.error());
+		return;
+	}
+
+	std::println("{}", *result);
+}
+
+void ProjCtl::git_push(const std::string& name) {
+	ProjectIteratorResult project = project_find(name);
+	if (!project) return;
+	const ProjectContent& content = (*project)->second;
+
+	std::expected<std::string, std::string> result = git_interface.push(content);
+
+	if (!result) {
+		std::println("{}", result.error());
 		return;
 	}
 

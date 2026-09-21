@@ -13,6 +13,7 @@ enum class CommandOption {
 	Build,
 	Run,
 	Commit,
+	Push,
 	Idk
 };
 
@@ -26,9 +27,10 @@ namespace {
 			case 'a':
 				return CommandOption::Add;
 			case 'p':
-				return CommandOption::Path;
+				if (command == "path") return CommandOption::Path;
+				return CommandOption::Push;
 			case 'r':
-				if (command[1] == 'u') return CommandOption::Run;
+				if (command == "run") return CommandOption::Run;
 				return CommandOption::Remove;
 			case 'o':
 				return CommandOption::Open;
@@ -121,15 +123,32 @@ int main(const int argc, const char **argv) {
 										 continue;
 									 }
 			case CommandOption::Commit: {
-											if (arg_iterator + 1 >= argc) {
+											bool push = false;
+											if (std::string(argv[arg_iterator]) == "push") {
+												push = true;
+												arg_iterator++;
+												if (arg_iterator + 1 >= argc) {
+													std::print("You're missing some arguments!");
+													continue;
+												}
+											} else if (arg_iterator + 1 >= argc) {
 												std::print("You're missing some arguments!");
 												continue;
 											}
 											std::string name = argv[arg_iterator++];
 											std::string_view message = argv[arg_iterator++];
 											proj_ctl.git_commit(name, message);
+											if (push) proj_ctl.git_push(name);
 											continue;
 										}
+			case CommandOption::Push: {
+										  if (arg_iterator >= argc) {
+											  std::print("You're missing some arguments!");
+											  continue;
+										  }
+										  proj_ctl.git_push(std::string(argv[arg_iterator++]));
+										  continue;
+									  }
 			case CommandOption::Idk: {
 										 std::print("Unrecognized command");
 										 continue;
