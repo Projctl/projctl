@@ -191,7 +191,7 @@ void ProjCtl::path_show(const std::string& name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 
-	std::println("{}{:<{}}{}\n\n{}{}{}", MARGIN, "Path for:", NAME_WIDTH, name, MARGIN, MARGIN, (*project)->second.path.string());
+	std::println("{}", (*project)->second.path.string());
 }
 
 void ProjCtl::open(const std::string& name) {

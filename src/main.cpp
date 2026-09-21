@@ -52,8 +52,8 @@ int main(const int argc, const char **argv) {
 	int arg_iterator = 1;
 
 	while (arg_iterator < argc) {
-		std::print("\n\n");
 		std::string command = argv[arg_iterator++];
+		if (command != "path") std::print("\n\n");
 		switch (get_option_from_command(command)) {
 			case CommandOption::List: {
 										  if (arg_iterator < argc && argv[arg_iterator][0] == 'g') {
@@ -193,8 +193,8 @@ int main(const int argc, const char **argv) {
 										 continue;
 									 }
 		}
+		if (command != "path")	std::print("\n\n");
 	}
-	std::print("\n\n");
 
 	return 0;
 }
