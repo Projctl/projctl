@@ -2,7 +2,7 @@
 
 #include <cstdlib>
 
-std::optional<std::string> SystemInterface::run_command(const std::string &command) {
+std::optional<std::string> SystemInterface::run(const std::string &command) {
 	FILE *pipe = popen(command.c_str(), "r");
 	if (!pipe)
 		return std::nullopt;
@@ -23,7 +23,7 @@ std::optional<std::string> SystemInterface::run_command(const std::string &comma
 
 int SystemInterface::run_interactive(const std::string &command) { return std::system(command.c_str()); }
 
-std::filesystem::path SystemInterface::get_config_home() {
+std::filesystem::path SystemInterface::config_home() {
 	const char* xdg = std::getenv("XDG_CONFIG_HOME");
 
 	if (xdg && *xdg != '\0') return std::filesystem::path{xdg};
@@ -35,7 +35,7 @@ std::filesystem::path SystemInterface::get_config_home() {
 	return {};
 }
 
-std::filesystem::path SystemInterface::get_cache_home() {
+std::filesystem::path SystemInterface::cache_home() {
 	const char* xdg = std::getenv("XDG_CACHE_HOME");
 
 	if (xdg && *xdg != '\0') return std::filesystem::path{xdg};

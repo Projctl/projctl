@@ -16,6 +16,7 @@ add_library(projctl_core
 	src/projctl.cpp
 	src/projectcontent.cpp
 	src/systeminterface.cpp
+	src/gitinterface.cpp
 )
 
 target_include_directories(projctl_core
