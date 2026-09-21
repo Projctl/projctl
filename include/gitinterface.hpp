@@ -13,6 +13,8 @@ class GitInterface {
 	GitInterface(SystemInterface&);
 	bool is_repo(const ProjectContent&);
 	std::expected<std::string, std::string> branch(const ProjectContent&);
+	std::expected<std::string, std::string> branch_list(const ProjectContent&);
+	std::expected<std::string, std::string> branch_switch(const ProjectContent&, std::string_view branch);
 	std::expected<std::string, std::string> remote(const ProjectContent&);
 	std::expected<std::string, std::string> remote_short(const ProjectContent&);
 	std::expected<std::string, std::string> commit(const ProjectContent&, std::string_view);
