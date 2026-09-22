@@ -13,6 +13,16 @@ bool GitInterface::is_repo(const ProjectContent& project) {
 	return output && *output == "true";
 }
 
+std::expected<std::string, std::string> GitInterface::changes(const ProjectContent& project) {
+	if (!is_repo(project)) return std::unexpected("Not a git repo");
+
+	std::string command = std::format("git -C \"{}\" status --porcelain", project.path.string());
+	std::optional<std::string> output = system_interface.run(command);
+
+	if (!output) return std::unexpected("Git status failed");
+	return *output;
+}
+
 std::expected<std::string, std::string> GitInterface::branch(const ProjectContent& project) {
 	if (!is_repo(project)) return std::unexpected("Not a git repo");
 

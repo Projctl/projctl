@@ -12,6 +12,7 @@ class GitInterface {
 	public:
 	GitInterface(SystemInterface&);
 	bool is_repo(const ProjectContent&);
+	std::expected<std::string, std::string> changes(const ProjectContent&);
 	std::expected<std::string, std::string> branch(const ProjectContent&);
 	std::expected<std::string, std::string> branch_list(const ProjectContent&);
 	std::expected<std::string, std::string> branch_switch(const ProjectContent&, std::string_view branch);
