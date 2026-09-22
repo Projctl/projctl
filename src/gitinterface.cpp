@@ -151,3 +151,14 @@ std::expected<std::string, std::string> GitInterface::pull(const ProjectContent&
 
 	return *result;
 }
+std::expected<std::string, std::string> GitInterface::fetch(const ProjectContent& project) {
+	if (!is_repo(project)) return std::unexpected("Not a git repo");
+
+	std::string command = std::format("git -C \"{}\" fetch", project.path.string());
+
+	std::optional<std::string> result = system_interface.run(command);
+
+	if (!result) return std::unexpected("Git fetch failed");
+
+	return *result;
+}

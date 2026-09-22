@@ -109,7 +109,6 @@ void ProjCtl::save() {
 		projects << "path=" << project.second.path.string() << '\n';
 
 		if (project.second.build_command) projects << "build=" << *project.second.build_command << '\n' ;
-
 		if (project.second.run_command) projects << "run=" << *project.second.run_command << '\n';
 
 		projects << '\n';
@@ -118,14 +117,15 @@ void ProjCtl::save() {
 
 void ProjCtl::list() {
 	auto list_one = [&](const std::string& name, const ProjectContent& content) { return std::format("{}{}{:<{}}{}", MARGIN, MARGIN, name, NAME_WIDTH, content.path.string()); };
-	if (projects.empty()) std::println("There are no projects saved");
-	else {
-		std::println("{}{}{:<{}}{}\n", MARGIN, MARGIN, "Name", NAME_WIDTH, "Path");
-		std::vector<std::future<std::string>> tasks;
-		tasks.reserve(projects.size());
-		for (const decltype(projects)::value_type& project : projects) tasks.push_back(std::async(std::launch::async, list_one, std::cref(project.first), std::cref(project.second)));
-		for (std::future<std::string>& task : tasks) std::println("{}", task.get());
+	if (projects.empty()) {
+		std::println("There are no projects saved");
+		return;
 	}
+	std::println("{}{}{:<{}}{}\n", MARGIN, MARGIN, "Name", NAME_WIDTH, "Path");
+	std::vector<std::future<std::string>> tasks;
+	tasks.reserve(projects.size());
+	for (const decltype(projects)::value_type& project : projects) tasks.push_back(std::async(std::launch::async, list_one, std::cref(project.first), std::cref(project.second)));
+	for (std::future<std::string>& task : tasks) std::println("{}", task.get());
 }
 
 void ProjCtl::list_gits() {
@@ -235,19 +235,11 @@ void ProjCtl::open(const std::string& name) {
 }
 
 void ProjCtl::build(const std::string& name) {
-
 	auto build_one = [&](const std::string& name, const ProjectContent& content){
 		std::string output;
 		std::format_to(std::back_inserter(output), "Building {}\n", name);
 
-		std::optional<std::string_view> command_option;
-		if (content.build_command) {
-			command_option = content.build_command;
-			goto build;
-		}
-
-		command_option = build_command_for(content.type);
-build:
+		const std::optional<std::string_view> command_option = content.build_command ? content.build_command : build_command_for(content.type);
 		if (!command_option) {
 			std::format_to(std::back_inserter(output),"{}There's no default command for {} as type of project {}", MARGIN, project_type_to_string(content.type), name);
 			return output;
@@ -276,15 +268,8 @@ void ProjCtl::run(const std::string& name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 	const ProjectContent& content = (*project)->second;
-	std::optional<std::string> command_option;
 
-	if (content.run_command) {
-		command_option = content.run_command;
-		goto run;
-	}
-
-	command_option = run_command_for(content.type);
-run:
+	const std::optional<std::string_view> command_option = content.run_command ? content.run_command : run_command_for(content.type);
 	if (!command_option) {
 		std::println("{}There's no default command for {} as type of project {}", MARGIN, project_type_to_string(content.type), name);
 		return;
@@ -302,12 +287,7 @@ void ProjCtl::git_commit(const std::string& name, std::string_view message) {
 
 	std::expected<std::string, std::string> result = git_interface.commit(content, message);
 
-	if (!result) {
-		std::println("{}", result.error());
-		return;
-	}
-
-	std::println("{}", *result);
+	std::println("{}", result ? *result : result.error());
 }
 
 void ProjCtl::git_push(const std::string& name) {
@@ -317,12 +297,7 @@ void ProjCtl::git_push(const std::string& name) {
 
 	std::expected<std::string, std::string> result = git_interface.push(content);
 
-	if (!result) {
-		std::println("{}", result.error());
-		return;
-	}
-
-	std::println("{}", *result);
+	std::println("{}", result ? *result : result.error());
 }
 
 void ProjCtl::git_push_branch(const std::string& name) {
@@ -333,18 +308,14 @@ void ProjCtl::git_push_branch(const std::string& name) {
 	std::expected<std::string, std::string> result = git_interface.branch(content);
 	if (!result) {
 		std::println("{}", result.error());
+		return;
 	}
 
 	std::string branch = *result;
 
 	result = git_interface.push_branch(content, branch);
 
-	if (!result) {
-		std::println("{}", result.error());
-		return;
-	}
-
-	std::println("{}", *result);
+	std::println("{}", result ? *result : result.error());
 }
 
 void ProjCtl::git_pull(const std::string& name) {
@@ -353,11 +324,7 @@ void ProjCtl::git_pull(const std::string& name) {
 		std::format_to(std::back_inserter(output), "Pulling: {}\n", project_name);
 		std::expected<std::string, std::string> result = git_interface.pull(content);
 
-		if (!result) {
-			std::format_to(std::back_inserter(output), "{}", result.error());
-			return output;
-		}
-		std::format_to(std::back_inserter(output), "{}", *result);
+		std::format_to(std::back_inserter(output), "{}", result ? *result : result.error());
 		return output;
 	};
 
@@ -374,18 +341,37 @@ void ProjCtl::git_pull(const std::string& name) {
 	std::println("{}", pull_one((*project)->first, (*project)->second));
 }
 
+void ProjCtl::git_fetch(const std::string& name) {
+	auto fetch_one = [&](const std::string& project_name, const ProjectContent& content) {
+		std::string output;
+		std::format_to(std::back_inserter(output), "Fetching: {}\n", project_name);
+		std::expected<std::string, std::string> result = git_interface.fetch(content);
+
+		std::format_to(std::back_inserter(output), "{}", result ? *result : result.error());
+		return output;
+	};
+
+	if (name == "--all") {
+		std::vector<std::future<std::string>> tasks;
+		tasks.reserve(projects.size());
+		for (const decltype(projects)::value_type& project : projects) if (git_interface.is_repo(project.second)) tasks.push_back(std::async(std::launch::async, fetch_one, std::cref(project.first), std::cref(project.second)));
+		for (std::future<std::string>& task : tasks) std::println("{}\n", task.get());
+		return;
+	}
+	ProjectIteratorResult project = project_find(name);
+	if (!project) return;
+
+	std::println("{}", fetch_one((*project)->first, (*project)->second));
+}
+
 void ProjCtl::git_branch_list(const std::string& name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 	const ProjectContent& content = (*project)->second;
 
 	std::expected<std::string, std::string> result = git_interface.branch_list(content);
-	if (!result) {
-		std::println("{}", result.error());
-		return;
-	}
 
-	std::println("{}", *result);
+	std::println("{}", result ? *result : result.error());
 }
 
 void ProjCtl::git_branch(const std::string& name, std::string_view branch) {
@@ -394,10 +380,6 @@ void ProjCtl::git_branch(const std::string& name, std::string_view branch) {
 	const ProjectContent& content = (*project)->second;
 
 	std::expected<std::string, std::string> result = git_interface.branch_switch(content, branch);
-	if (!result) {
-		std::println("{}", result.error());
-		return;
-	}
 
-	std::println("{}", *result);
+	std::println("{}", result ? *result : result.error());
 }

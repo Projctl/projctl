@@ -16,6 +16,7 @@ enum class CommandOption {
 	Commit,
 	Push,
 	Pull,
+	Fetch,
 	Idk
 };
 
@@ -42,6 +43,8 @@ namespace {
 				return CommandOption::Build;
 			case 'c':
 				return CommandOption::Commit;
+			case 'f':
+				return CommandOption::Fetch;
 		}
 		return CommandOption::Idk;
 	}
@@ -188,6 +191,14 @@ int main(const int argc, const char **argv) {
 											proj_ctl.git_branch(name, branch);
 											continue;
 										}
+			case CommandOption::Fetch: {
+										   if (arg_iterator >= argc) {
+											   std::print("You're missing some arguments!");
+											   continue;
+										   }
+										   proj_ctl.git_fetch(std::string(argv[arg_iterator++]));
+										   continue;
+									   }
 			case CommandOption::Idk: {
 										 std::print("Unrecognized command");
 										 continue;
