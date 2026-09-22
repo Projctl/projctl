@@ -124,10 +124,19 @@ void ProjCtl::list() {
 
 void ProjCtl::list_gits() {
 	auto list_one_git = [this](const std::string& name, const ProjectContent& content){
-		if (git_interface.is_repo(content)) std::println("{}{}{:<{}}{:<50}{:<{}}{:<{}}", MARGIN, MARGIN, name, NAME_WIDTH, content.path.string(), *git_interface.branch(content), NAME_WIDTH, *git_interface.remote_short(content), NAME_WIDTH);
+		if (!git_interface.is_repo(content)) return false;
+		std::println("{}{}{:<{}}{:<50}{:<{}}{:<{}}", MARGIN, MARGIN, name, NAME_WIDTH, content.path.string(), *git_interface.branch(content), NAME_WIDTH, *git_interface.remote_short(content), NAME_WIDTH);
+		return true;
 	};
+
 	std::println("{}{}{:<{}}{:<50}{:<{}}{:<{}}\n", MARGIN, MARGIN, "Name", NAME_WIDTH, "Path", "Branch", NAME_WIDTH, "Repo", NAME_WIDTH);
-	for (const decltype(projects)::value_type& project : projects) list_one_git(project.first, project.second);
+
+	bool gits = false;
+	for (const decltype(projects)::value_type& project : projects) {
+		gits = list_one_git(project.first, project.second) || gits;
+	}
+
+	if (!gits) std::println("There are no git projects saved");
 }
 
 ProjectIteratorResult ProjCtl::project_find(const std::string &name) {
