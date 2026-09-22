@@ -4,8 +4,7 @@
 
 std::optional<std::string> SystemInterface::run(const std::string &command) {
 	FILE *pipe = popen(command.c_str(), "r");
-	if (!pipe)
-		return std::nullopt;
+	if (!pipe) [[unlikely]] return std::nullopt;
 
 	std::string output;
 	char buffer[256];
@@ -14,10 +13,8 @@ std::optional<std::string> SystemInterface::run(const std::string &command) {
 		output += buffer;
 
 	int status = pclose(pipe);
-	if (status != 0)
-		return std::nullopt;
-	if (!output.empty() && output.back() == '\n')
-		output.pop_back();
+	if (status != 0) [[unlikely]] return std::nullopt;
+	if (!output.empty() && output.back() == '\n') output.pop_back();
 	return output;
 }
 
