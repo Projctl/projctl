@@ -30,53 +30,53 @@ projctl list
 projctl list gits
 ```
 ### Status
-Gives status of project \(/ all projects if used with --all flag\)
-Status contains
+Gives status of project \(/ all projects if used with --all flag\)<br>
+Status contains<br>
     Name:               \[Name\]<br>
-    Path:               \[Path\]
-    Exists:             \[If project exists on disk, "No" if it has been removed / moved\]
-    Type:               \[Lang / environment, currently supported are: \{ "C++/CMake", "Rust", "Node", "Python" \} \]
-    Git:                \[\(If git repo\) current workspace/repo_name\]
-    Branch:             \[\(If git repo\) current working branch\]
-    Full remote:        \[\(If git repo\) full remote path\]
-    Status:             \[\(If git repo\)If there were unpushed / uncommitted changes, if yes lists files with changes below\]
+    Path:               \[Path\]<br>
+    Exists:             \[If project exists on disk, "No" if it has been removed / moved\]<br>
+    Type:               \[Lang / environment, currently supported are: \{ "C++/CMake", "Rust", "Node", "Python" \} \]<br>
+    Git:                \[\(If git repo\) current workspace/repo_name\]<br>
+    Branch:             \[\(If git repo\) current working branch\]<br>
+    Full remote:        \[\(If git repo\) full remote path\]<br>
+    Status:             \[\(If git repo\)If there were unpushed / uncommitted changes, if yes lists files with changes below\]<br>
 ```
 projctl status [name]
 projctl status --all
 ```
 ### Add
-Adds project to saved projects
-You can set it to auto-add current directory as project with name of dir
-Also you can set name of dir and add 
-USE OBJECTIVE PATHS for now at least
-Tho "." I did make to be converted to objective path of current dir
+Adds project to saved projects<br>
+You can set it to auto-add current directory as project with name of dir<br>
+Also you can set name of dir and add <br>
+USE OBJECTIVE PATHS for now at least<br>
+Tho "." I did make to be converted to objective path of current dir<br>
 ```
 projctl add [name] [path]
 projctl add [name] .
 projctl add .
 ```
 ### Remove
-Removes project
-\(Doesn't actually remove files, just from projctl list\)
+Removes project<br>
+\(Doesn't actually remove files, just from projctl list\)<br>
 ```
 projctl remove [name]
 projctl rm [name]
 ```
 ### Open
-Opens neovim in project location
-Soon \(I hope\) will open editor set in config but well not on that stage yet
+Opens neovim in project location<br>
+Soon \(I hope\) will open editor set in config but well not on that stage yet<br>
 ```
 projctl open [name]
 ```
 ### Path
-Gives path of project
-Nice for `cd (projctl path $argv[1])` terminal macro
+Gives path of project<br>
+Nice for `cd (projctl path $argv[1])` terminal macro<br>
 ```
 projctl path [name]
 ```
 ### Build && run
-Respectively builds and runs projects that either have customely added `build` and `run` commands or have supported default commands \(Rust && node supported for both, CMake + Ninja does have build\)
-Build also supports --all flag
+Respectively builds and runs projects that either have customely added `build` and `run` commands or have supported default commands \(Rust && node supported for both, CMake + Ninja does have build\)<br>
+Build also supports --all flag<br>
 ```
 projctl build [name]
 projctl build --all
@@ -90,15 +90,15 @@ Switches / creates and switches to branch of given name
 projctl branch [name] [branch_name]
 ```
 ### Fetch
-Fetches project
-Supports --all flag \(performs fetch to all git projects\)
+Fetches project<br>
+Supports --all flag \(performs fetch to all git projects\)<br>
 ```
 projctl fetch [name]
 projctl fetch --all
 ```
 ### Pull
-Updates project
-Supports --all flag \(performs pull for all git projects\)
+Updates project<br>
+Supports --all flag \(performs pull for all git projects\)<br>
 ```
 projctl pull [name]
 projctl pull --all
