@@ -1,10 +1,10 @@
 # Project Control
-Have you ever wondered if you're in gh or glab repo so what command to run?
-Have you ever mistook one for other?
-I did
-And it was annoying
-So here it is wrapper for git management \(haven't rly done anything on CodeBerg so I don't have that one wrapped\)
-Tho honestly it's useful not only for git projects
+Have you ever wondered if you're in gh or glab repo so what command to run?<br>
+Have you ever mistook one for other?<br>
+I did<br>
+And it was annoying<br>
+So here it is wrapper for git management \(haven't rly done anything on CodeBerg so I don't have that one wrapped\)<br>
+Tho honestly it's useful not only for git projects<br>
 
 `projctl branch has to be used at the end if you want branches to be listed`
 Dependencies:
@@ -13,8 +13,8 @@ cmake 3.20
 ninja
 just
 ```
-C++ standard is set to 2023 so I guess that's requirement for compiler
-Also have $XDG_CONFIG_HOME and $XDG_CACHE_HOME set to some location
+C++ standard is set to 2023 so I guess that's requirement for compiler<br>
+Also have $XDG_CONFIG_HOME and $XDG_CACHE_HOME set to some location<br>
 ```
 ./install.fish
 ```
@@ -23,8 +23,8 @@ Also have $XDG_CONFIG_HOME and $XDG_CACHE_HOME set to some location
 # Usage \[fast docs\]
 
 ### List
-Lists projects
-With gits or git will list only git repos
+Lists projects<br>
+With gits or git will list only git repos<br>
 ```
 projctl list 
 projctl list gits
