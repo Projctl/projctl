@@ -30,9 +30,9 @@ namespace {
 			case 'a':
 				return CommandOption::Add;
 			case 'p':
+				if (command == "push") return CommandOption::Push;
 				if (command == "path") return CommandOption::Path;
-				if (command == "pull") return CommandOption::Pull;
-				return CommandOption::Push;
+				return CommandOption::Pull;
 			case 'r':
 				if (command == "run") return CommandOption::Run;
 				return CommandOption::Remove;

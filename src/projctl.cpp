@@ -58,7 +58,7 @@ void ProjCtl::load() {
 		if (line.empty()) continue;
 		switch (line.front()) {
 			case '[':
-				if (!name.empty()) {
+				if (!name.empty()) [[likely]] {
 					this->projects.emplace(
 							name,
 							ProjectContent {
@@ -88,7 +88,7 @@ void ProjCtl::load() {
 				continue;
 		}
 	}
-	if (!name.empty()) {
+	if (!name.empty()) [[likely]] {
 		this->projects.emplace(
 				name,
 				ProjectContent {
@@ -117,7 +117,7 @@ void ProjCtl::save() {
 
 void ProjCtl::list() {
 	auto list_one = [&](const std::string& name, const ProjectContent& content) { return std::format("{}{}{:<{}}{}", MARGIN, MARGIN, name, NAME_WIDTH, content.path.string()); };
-	if (projects.empty()) {
+	if (projects.empty()) [[unlikely]] {
 		std::println("There are no projects saved");
 		return;
 	}
@@ -137,7 +137,7 @@ void ProjCtl::list_gits() {
 	tasks.reserve(projects.size());
 	for (const decltype(projects)::value_type& project : projects) if (git_interface.is_repo(project.second)) tasks.push_back(std::async(std::launch::async, list_one_git, std::cref(project.first), std::cref(project.second)));
 
-	if (tasks.empty()) {
+	if (tasks.empty()) [[unlikely]] {
 		std::println("There are no git projects saved");
 		return;
 	}
