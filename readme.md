@@ -7,7 +7,14 @@ So here it is wrapper for git management \(haven't rly done anything on CodeBerg
 Tho honestly it's useful not only for git projects
 
 `projctl branch has to be used at the end if you want branches to be listed`
-
+Dependencies:
+```
+cmake 3.20
+ninja
+just
+```
+C++ standard is set to 2023 so I guess that's requirement for compiler
+Also have $XDG_CONFIG_HOME and $XDG_CACHE_HOME set to some location
 ```
 ./install.fish
 ```
