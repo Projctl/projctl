@@ -170,7 +170,7 @@ void ProjCtl::status(const std::string &name) {
 		std::expected<std::string, std::string> remote = git_interface.remote(content);
 		std::format_to(std::back_inserter(output), "{}{:<{}}{}\n", MARGIN, "Full remote:", NAME_WIDTH, remote ? *remote: remote.error());
 		std::expected<std::string, std::string> changes = git_interface.changes(content);
-		std::format_to(std::back_inserter(output), "{}{:<{}}{}\n", MARGIN, "status:", NAME_WIDTH, changes ? changes->empty() ? "No changes" : "Changes:\n\n" + *changes : changes.error());
+		std::format_to(std::back_inserter(output), "{}{:<{}}{}\n", MARGIN, "Status:", NAME_WIDTH, changes ? changes->empty() ? "No changes" : "Changes:\n\n" + *changes : changes.error());
 		return output;
 	};
 
