@@ -32,7 +32,7 @@ projctl list gits
 ### Status
 Gives status of project \(/ all projects if used with --all flag\)
 Status contains
-    Name:               \[Name\]
+    Name:               \[Name\]<br>
     Path:               \[Path\]
     Exists:             \[If project exists on disk, "No" if it has been removed / moved\]
     Type:               \[Lang / environment, currently supported are: \{ "C++/CMake", "Rust", "Node", "Python" \} \]
