@@ -28,6 +28,10 @@ target_compile_options(projctl_core PRIVATE
 	-Wall
 	-Wextra
 	-Wpedantic
+	-Wshadow
+	-Wconversion
+	-Wsign-conversion
+	-O2
 )
 
 target_link_libraries(projctl
@@ -35,4 +39,12 @@ target_link_libraries(projctl
 		projctl_core
 )
 
-
+target_compile_options(projctl PRIVATE
+	-Wall
+	-Wextra
+	-Wpedantic
+	-Wshadow
+	-Wconversion
+	-Wsign-conversion
+	-O2
+)
