@@ -34,7 +34,7 @@ Status contains
     Full remote:        \[\(If git repo\) full remote path\]
     Status:             \[\(If git repo\)If there were unpushed / uncommitted changes, if yes lists files with changes below\]
 ```
-projctl status \[name\]
+projctl status [name]
 projctl status --all
 ```
 ### Add
@@ -44,22 +44,22 @@ Also you can set name of dir and add
 USE OBJECTIVE PATHS for now at least
 Tho "." I did make to be converted to objective path of current dir
 ```
-projctl add \[name\] \[path\]
-projctl add \[name\] .
+projctl add [name] [path]
+projctl add [name] .
 projctl add .
 ```
 ### Remove
 Removes project
 \(Doesn't actually remove files, just from projctl list\)
 ```
-projctl remove \[name\]
-projctl rm \[name\]
+projctl remove [name]
+projctl rm [name]
 ```
 ### Open
 Opens neovim in project location
 Soon \(I hope\) will open editor set in config but well not on that stage yet
 ```
-projctl open \[name\]
+projctl open [name]
 ```
 ### Path
 Gives path of project
@@ -71,48 +71,48 @@ projctl path [name]
 Respectively builds and runs projects that either have customely added `build` and `run` commands or have supported default commands \(Rust && node supported for both, CMake + Ninja does have build\)
 Build also supports --all flag
 ```
-projctl build \[name\]
+projctl build [name]
 projctl build --all
-projctl run \[name\]
+projctl run [name]
 ```
 ## Git wrapper
 Here we go into the rabbithole
 ### Branch
 Switches / creates and switches to branch of given name
 ```
-projctl branch \[name\] \[branch_name\]
+projctl branch [name] [branch_name]
 ```
 ### Fetch
 Fetches project
 Supports --all flag \(performs fetch to all git projects\)
 ```
-projctl fetch \[name\]
+projctl fetch [name]
 projctl fetch --all
 ```
 ### Pull
 Updates project
 Supports --all flag \(performs pull for all git projects\)
 ```
-projctl pull \[name\]
+projctl pull [name]
 projctl pull --all
 ```
 ### Commit
 Adds all changes and makes commit with provided message \(equivalent to `git add . && git commit -m \[commit_message\]`\)
 ```
-projctl commit \[name\] \[commit_message\]
+projctl commit [name] [commit_message]
 ```
 ### Push
 Pushes committed changes
 If used with branch pushes changes to uninitialized branch \(equivalent to `git push -u origin \[current_branch\]`\)
 ```
-projctl push \[name\]
-projctl push branch \[name\]
+projctl push [name]
+projctl push branch [name]
 ```
 ### Commit push
 Performs both actions, you can combo it with branch as well to set upstream to new branch
 ```
-projctl commit push \[name\] \[commit_message\]
-projctl commit push branch \[name\] \[commit_message\]
+projctl commit push [name] [commit_message]
+projctl commit push branch [name] [commit_message]
 ```
 
 ## Important note
@@ -129,3 +129,4 @@ projctl build project_3
 projctl rm project_4
 ```
 In that exact order with those arguments provided
+Also minor thing but for process to be actually saving some time everything with --all flag is done in parrallel but for that to happen program stores output and when everything is done prints it in order so there's no classic `some console print -> some waiting -> some more printing` for example in pull command, everything gets printed all at once when waiting is done, but thanks to that all thing are async so it' kinda faster one could argue
