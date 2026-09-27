@@ -37,7 +37,7 @@ std::string trim(std::string_view text) {
 
 ProjCtl::ProjCtl() : git_interface(system_interface) {
 	config_dir = system_interface.config_home()/"projctl";
-	data_dir = system_interface.cache_home()/"projctl";
+	data_dir = system_interface.data_home()/"projctl";
 	load();
 }
 

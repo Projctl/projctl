@@ -9,5 +9,6 @@ class SystemInterface {
 		std::optional<std::string> run(const std::string&);
 		int run_interactive(const std::string&);
 		std::filesystem::path config_home();
+		std::filesystem::path data_home();
 		std::filesystem::path cache_home();
 };
