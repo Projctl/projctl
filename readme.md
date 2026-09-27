@@ -8,24 +8,29 @@ Tho honestly it's useful not only for git projects<br>
 
 `projctl branch has to be used at the end if you want branches to be listed`
 Dependencies:
-```
+```fish
 cmake 3.20
 ninja
 just
 ```
 C++ standard is set to 2023 so I guess that's requirement for compiler<br>
 Also have $XDG_CONFIG_HOME and $XDG_CACHE_HOME set to some location<br>
-```
+```fish
 ./install.fish
 ```
 
 
 # Usage \[fast docs\]
 
+Overall concept
+```bash
+projctl [option/s] [project_name] [argument/s]
+```
+
 ### List
 Lists projects<br>
 With gits or git will list only git repos<br>
-```
+```fish
 projctl list 
 projctl list gits
 ```
@@ -40,7 +45,7 @@ Status contains<br>
     Branch:             \[\(If git repo\) current working branch\]<br>
     Full remote:        \[\(If git repo\) full remote path\]<br>
     Status:             \[\(If git repo\)If there were unpushed / uncommitted changes, if yes lists files with changes below\]<br>
-```
+```fish
 projctl status [name]
 projctl status --all
 ```
@@ -50,7 +55,7 @@ You can set it to auto-add current directory as project with name of dir<br>
 Also you can set name of dir and add <br>
 USE OBJECTIVE PATHS for now at least<br>
 Tho "." I did make to be converted to objective path of current dir<br>
-```
+```fish
 projctl add [name] [path]
 projctl add [name] .
 projctl add .
@@ -58,26 +63,26 @@ projctl add .
 ### Remove
 Removes project<br>
 \(Doesn't actually remove files, just from projctl list\)<br>
-```
+```fish
 projctl remove [name]
 projctl rm [name]
 ```
 ### Open
 Opens neovim in project location<br>
 Soon \(I hope\) will open editor set in config but well not on that stage yet<br>
-```
+```fish
 projctl open [name]
 ```
 ### Path
 Gives path of project<br>
 Nice for `cd (projctl path $argv[1])` terminal macro<br>
-```
+```fish
 projctl path [name]
 ```
 ### Build && run
 Respectively builds and runs projects that either have customely added `build` and `run` commands or have supported default commands \(Rust && node supported for both, CMake + Ninja does have build\)<br>
 Build also supports --all flag<br>
-```
+```fish
 projctl build [name]
 projctl build --all
 projctl run [name]
@@ -86,50 +91,50 @@ projctl run [name]
 Here we go into the rabbithole
 ### Branch
 Switches / creates and switches to branch of given name
-```
+```fish
 projctl branch [name] [branch_name]
 ```
 ### Fetch
 Fetches project<br>
 Supports --all flag \(performs fetch to all git projects\)<br>
-```
+```fish
 projctl fetch [name]
 projctl fetch --all
 ```
 ### Pull
 Updates project<br>
 Supports --all flag \(performs pull for all git projects\)<br>
-```
+```fish
 projctl pull [name]
 projctl pull --all
 ```
 ### Commit
 Adds all changes and makes commit with provided message \(equivalent to `git add . && git commit -m \[commit_message\]`\)
-```
+```fish
 projctl commit [name] [commit_message]
 ```
 ### Push
 Pushes committed changes
 If used with branch pushes changes to uninitialized branch \(equivalent to `git push -u origin \[current_branch\]`\)
-```
+```fish
 projctl push [name]
 projctl push branch [name]
 ```
 ### Commit push
 Performs both actions, you can combo it with branch as well to set upstream to new branch
-```
+```fish
 projctl commit push [name] [commit_message]
 projctl commit push branch [name] [commit_message]
 ```
 
 ## Important note
 Just so you know it does wrap around all args so you can do mutliple actions in one prompt but just beware that for every action you do need to provide all needed components
-```
+```fish
 projctl status project_1 commit push project_2 "commit_message" build project_3 rm project_4
 ```
 
 Will perform
-```
+```fish
 projctl status project_1
 projctl commit push project_2 "commit_message"
 projctl build project_3
