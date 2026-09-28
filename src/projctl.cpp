@@ -301,7 +301,7 @@ void ProjCtl::git_commit(const std::string& name, std::string_view message) {
 
 	std::expected<std::string, std::string> result = git_interface.commit(content, message);
 
-	std::println("{}{}{}", result ? color_code(config.tick_color) : color_code(config.error_color), result ? *result : result.error(), RESET);
+	std::println("{}{}\n{}{}", result ? color_code(config.tick_color) : color_code(config.error_color), result ? TICK : CROSS, result ? *result : result.error(), RESET);
 }
 
 void ProjCtl::git_push(const std::string& name) {
