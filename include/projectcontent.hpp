@@ -40,16 +40,16 @@ constexpr std::string_view project_type_to_string(ProjectType type) {
 constexpr std::optional<std::string_view> build_command_for(ProjectType type) {
 	switch (type) {
 	case ProjectType::Rust:
-		return "cargo build";
+		return "cargo build 2>&1";
 
 	case ProjectType::CMake:
-		return "cmake -S . -B build -G Ninja && cmake --build build";
+		return "cmake -S . -B build -G Ninja 2>&1 && cmake --build build 2>&1";
 
 	case ProjectType::Node:
-		return "npm run build";
+		return "npm run build 2>&1";
 
 	case ProjectType::Zig:
-		return "zig build";
+		return "zig build 2>&1";
 
 	case ProjectType::Python:
 	case ProjectType::Unknown:
@@ -62,16 +62,16 @@ constexpr std::optional<std::string_view> build_command_for(ProjectType type) {
 constexpr std::optional<std::string_view> run_command_for(ProjectType type) {
 	switch (type) {
 	case ProjectType::Rust:
-		return "cargo run";
+		return "cargo run 2>&1";
 
 	case ProjectType::CMake:
 		return std::nullopt;
 
 	case ProjectType::Node:
-		return "npm start";
+		return "npm start 2>&1";
 
 	case ProjectType::Zig:
-		return "zig run";
+		return "zig run 2>&1";
 
 	case ProjectType::Python:
 	case ProjectType::Unknown:

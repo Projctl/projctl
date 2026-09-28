@@ -3,6 +3,9 @@
 #include "projectcontent.hpp"
 #include "systeminterface.hpp"
 #include "gitinterface.hpp"
+#include "githubinterface.hpp"
+#include "gitlabinterface.hpp"
+#include "config.hpp"
 
 #include <filesystem>
 #include <map>
@@ -10,10 +13,13 @@
 class ProjCtl
 {
 	std::map<std::string, ProjectContent> projects;
-	std::filesystem::path config_dir;
-	std::filesystem::path data_dir;
+	std::filesystem::path config_path;
+	Config config;
+	std::filesystem::path data_path;
 	SystemInterface system_interface;
 	GitInterface git_interface;
+	GitHubInterface gh_interface;
+	GitLabInterface glab_interface;
 	void load();
 	void save();
 	std::optional<std::map<std::string, ProjectContent>::const_iterator> project_find(const std::string&);
@@ -38,4 +44,7 @@ class ProjCtl
 	void git_fetch(const std::string&);
 	void git_branch_list(const std::string&);
 	void git_branch(const std::string&, std::string_view);
+	void g_status();
+	void repo_list();
+	void issue_list(const std::string& name);
 };
