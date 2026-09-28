@@ -14,11 +14,19 @@ add_executable(projctl
 
 add_library(projctl_core
 	src/projctl.cpp
-	src/projectcontent.cpp
 	src/systeminterface.cpp
 	src/gitinterface.cpp
+	src/githubinterface.cpp
+	src/gitlabinterface.cpp
+	src/config.cpp
 )
 
+find_package(nlohmann_json REQUIRED)
+
+target_link_libraries(projctl_core
+	PRIVATE
+		nlohmann_json::nlohmann_json
+)
 target_include_directories(projctl_core
 	PUBLIC
 		${PROJECT_SOURCE_DIR}/include
@@ -28,7 +36,6 @@ target_compile_options(projctl_core PRIVATE
 	-Wall
 	-Wextra
 	-Wpedantic
-	-Wshadow
 	-Wconversion
 	-Wsign-conversion
 	-O2

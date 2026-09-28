@@ -17,6 +17,9 @@ enum class CommandOption {
 	Push,
 	Pull,
 	Fetch,
+	GStatus,
+	RepoList,
+	IssueList,
 	Idk
 };
 
@@ -34,6 +37,7 @@ namespace {
 				if (command == "path") return CommandOption::Path;
 				return CommandOption::Pull;
 			case 'r':
+				if (command == "repos") return CommandOption::RepoList;
 				if (command == "run") return CommandOption::Run;
 				return CommandOption::Remove;
 			case 'o':
@@ -45,6 +49,11 @@ namespace {
 				return CommandOption::Commit;
 			case 'f':
 				return CommandOption::Fetch;
+			case 'g':
+				if (command == "git") return CommandOption::GStatus;
+				break;
+			case 'i':
+				return CommandOption::IssueList;
 		}
 		return CommandOption::Idk;
 	}
@@ -68,7 +77,7 @@ int main(const int argc, const char **argv) {
 									  }
 			case CommandOption::Status: {
 											if (arg_iterator >= argc) {
-												std::print("You're missing some arguments!");
+												std::println("You're missing some arguments!");
 												continue;
 											}
 											proj_ctl.status(std::string(argv[arg_iterator++]));
@@ -76,7 +85,7 @@ int main(const int argc, const char **argv) {
 										}
 			case CommandOption::Add: {
 										 if (arg_iterator >= argc) {
-											 std::print("You're missing some arguments!");
+											 std::println("You're missing some arguments!");
 											 continue;
 										 }
 										 if (std::string_view(argv[arg_iterator]) == ".") {
@@ -85,7 +94,7 @@ int main(const int argc, const char **argv) {
 											 continue;
 										 }
 										 if (arg_iterator + 2 > argc) {
-											 std::print("You're missing some arguments!");
+											 std::println("You're missing some arguments!");
 											 continue;
 										 }
 										 std::string name = std::string(argv[arg_iterator++]);
@@ -95,7 +104,7 @@ int main(const int argc, const char **argv) {
 									 }
 			case CommandOption::Path: {
 										  if (arg_iterator >= argc) {
-											  std::print("You're missing some arguments!");
+											  std::println("You're missing some arguments!");
 											  continue;
 										  }
 										  proj_ctl.path_show(std::string(argv[arg_iterator++]));
@@ -103,7 +112,7 @@ int main(const int argc, const char **argv) {
 									  }
 			case CommandOption::Remove: {
 											if (arg_iterator >= argc) {
-												std::print("You're missing some arguments!");
+												std::println("You're missing some arguments!");
 												continue;
 											}
 											proj_ctl.remove(std::string(argv[arg_iterator++]));
@@ -111,7 +120,7 @@ int main(const int argc, const char **argv) {
 										}
 			case CommandOption::Open: {
 										  if (arg_iterator >= argc) {
-											  std::print("You're missing some arguments!");
+											  std::println("You're missing some arguments!");
 											  continue;
 										  }
 										  proj_ctl.open(std::string(argv[arg_iterator++]));
@@ -119,7 +128,7 @@ int main(const int argc, const char **argv) {
 									  }
 			case CommandOption::Build: {
 										   if (arg_iterator >= argc) {
-											   std::print("You're missing some arguments!");
+											   std::println("You're missing some arguments!");
 											   continue;
 										   }
 										   proj_ctl.build(std::string(argv[arg_iterator++]));
@@ -127,7 +136,7 @@ int main(const int argc, const char **argv) {
 									   }
 			case CommandOption::Run: {
 										 if (arg_iterator >= argc) {
-											 std::print("You're missing some arguments!");
+											 std::println("You're missing some arguments!");
 											 continue;
 										 }
 										 proj_ctl.run(std::string(argv[arg_iterator++]));
@@ -145,7 +154,7 @@ int main(const int argc, const char **argv) {
 												}
 											}
 											if (arg_iterator + 1 >= argc) {
-												std::print("You're missing some arguments!");
+												std::println("You're missing some arguments!");
 												continue;
 											}
 											std::string name = argv[arg_iterator++];
@@ -163,7 +172,7 @@ int main(const int argc, const char **argv) {
 											  proj_ctl.git_push_branch(std::string(argv[arg_iterator++]));
 											  continue;
 										  } else if (arg_iterator >= argc) {
-											  std::print("You're missing some arguments!");
+											  std::println("You're missing some arguments!");
 											  continue;
 										  }
 										  proj_ctl.git_push(std::string(argv[arg_iterator++]));
@@ -171,7 +180,7 @@ int main(const int argc, const char **argv) {
 									  }
 			case CommandOption::Pull: {
 										  if (arg_iterator >= argc) {
-											  std::print("You're missing some arguments!");
+											  std::println("You're missing some arguments!");
 											  continue;
 										  }
 										  proj_ctl.git_pull(std::string(argv[arg_iterator++]));
@@ -179,7 +188,7 @@ int main(const int argc, const char **argv) {
 									  }
 			case CommandOption::Branch: {
 											if (arg_iterator >= argc) {
-												std::print("You're missing some arguments!");
+												std::println("You're missing some arguments!");
 												continue;
 											}
 											if (arg_iterator + 1 == argc) {
@@ -193,12 +202,28 @@ int main(const int argc, const char **argv) {
 										}
 			case CommandOption::Fetch: {
 										   if (arg_iterator >= argc) {
-											   std::print("You're missing some arguments!");
+											   std::println("You're missing some arguments!");
 											   continue;
 										   }
 										   proj_ctl.git_fetch(std::string(argv[arg_iterator++]));
 										   continue;
 									   }
+			case CommandOption::GStatus: {
+											 proj_ctl.g_status();
+											 continue;
+										 }
+			case CommandOption::RepoList: {
+											  proj_ctl.repo_list();
+											  continue;
+										  }
+			case CommandOption::IssueList: {
+											   if (arg_iterator >= argc) {
+												   std::println("You're missing some arguments!");
+												   continue;
+											   }
+											   proj_ctl.issue_list(std::string(argv[arg_iterator++]));
+											   continue;
+										   }
 			case CommandOption::Idk: {
 										 std::print("Unrecognized command");
 										 continue;

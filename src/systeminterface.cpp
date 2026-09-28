@@ -14,7 +14,7 @@ std::optional<std::string> SystemInterface::run(const std::string &command) {
 
 	int status = pclose(pipe);
 	if (status != 0) [[unlikely]] return std::nullopt;
-	if (!output.empty() && output.back() == '\n') output.pop_back();
+	while (!output.empty() && output.back() == '\n') output.pop_back();
 	return output;
 }
 
