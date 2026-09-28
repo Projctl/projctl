@@ -67,8 +67,6 @@ std::optional<Color> color_from_string(std::string_view value) {
 
 }
 
-max_width			
-
 void Config::load(const std::filesystem::path& path) {
 	std::ifstream config(path);
 
@@ -94,6 +92,7 @@ void Config::load(const std::filesystem::path& path) {
 
 		if (section == "display") {
 			if (key == "name_width") name_width = std::stoul(value);
+			else if (key == "max_width") max_width = std::stoul(value);
 			else if (key == "path_width") path_width = std::stoul(value);
 			else if (key == "remote_width") remote_width = std::stoul(value);
 			else if (key == "branch_width") branch_width = std::stoul(value);
