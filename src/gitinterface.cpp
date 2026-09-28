@@ -119,7 +119,7 @@ std::expected<HostOption, std::string> GitInterface::host(const ProjectContent& 
 std::expected<std::string, std::string> GitInterface::add(const ProjectContent& project) {
 	if (!is_repo(project)) [[unlikely]] return std::unexpected("Not a git repo");
 
-	std::string command = std::format("git -C \"{}\" add .", project.path.string());
+	std::string command = std::format("git -C \"{}\" add . 2>&1", project.path.string());
 	std::optional<std::string> result = system_interface.run(command);
 
 	if (!result) [[unlikely]] return std::unexpected("Git add failed");
@@ -132,7 +132,7 @@ std::expected<std::string, std::string> GitInterface::commit(const ProjectConten
 	std::expected<std::string, std::string> add_output = add(project);
 	if (!add_output) [[unlikely]] return std::unexpected(add_output.error());
 
-	std::string command = std::format("git -C \"{}\" commit -m \"{}\"", project.path.string(), message);
+	std::string command = std::format("git -C \"{}\" commit -m \"{}\" 2>&1", project.path.string(), message);
 
 	std::optional<std::string> commit_output = system_interface.run(command);
 	if (!commit_output) [[unlikely]] return std::unexpected("Git commit failed");
@@ -146,7 +146,7 @@ std::expected<std::string, std::string> GitInterface::commit(const ProjectConten
 std::expected<std::string, std::string> GitInterface::push(const ProjectContent& project) {
 	if (!is_repo(project)) [[unlikely]] return std::unexpected("Not a git repo");
 
-	std::string command = std::format("git -C \"{}\" push", project.path.string());
+	std::string command = std::format("git -C \"{}\" push 2>&1", project.path.string());
 
 	std::optional<std::string> result = system_interface.run(command);
 
@@ -158,7 +158,7 @@ std::expected<std::string, std::string> GitInterface::push(const ProjectContent&
 std::expected<std::string, std::string> GitInterface::push_branch(const ProjectContent& project, std::string_view branch) {
 	if (!is_repo(project)) [[unlikely]] return std::unexpected("Not a git repo");
 
-	std::string command = std::format("git -C \"{}\" push -u origin {}", project.path.string(), branch);
+	std::string command = std::format("git -C \"{}\" push -u origin {} 2>&1", project.path.string(), branch);
 
 	std::optional<std::string> result = system_interface.run(command);
 
@@ -170,7 +170,7 @@ std::expected<std::string, std::string> GitInterface::push_branch(const ProjectC
 std::expected<std::string, std::string> GitInterface::pull(const ProjectContent& project) {
 	if (!is_repo(project)) [[unlikely]] return std::unexpected("Not a git repo");
 
-	std::string command = std::format("git -C \"{}\" pull", project.path.string());
+	std::string command = std::format("git -C \"{}\" pull 2>&1", project.path.string());
 
 	std::optional<std::string> result = system_interface.run(command);
 
@@ -181,7 +181,7 @@ std::expected<std::string, std::string> GitInterface::pull(const ProjectContent&
 std::expected<std::string, std::string> GitInterface::fetch(const ProjectContent& project) {
 	if (!is_repo(project)) [[unlikely]] return std::unexpected("Not a git repo");
 
-	std::string command = std::format("git -C \"{}\" fetch", project.path.string());
+	std::string command = std::format("git -C \"{}\" fetch 2>&1", project.path.string());
 
 	std::optional<std::string> result = system_interface.run(command);
 
