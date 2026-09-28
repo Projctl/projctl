@@ -67,6 +67,8 @@ std::optional<Color> color_from_string(std::string_view value) {
 
 }
 
+max_width			
+
 void Config::load(const std::filesystem::path& path) {
 	std::ifstream config(path);
 
@@ -99,7 +101,7 @@ void Config::load(const std::filesystem::path& path) {
 
 		else if (section == "issues") {
 			if (key == "number_width") issue_number_width = std::stoul(value);
-			if (key == "title_width") issue_title_width = std::stoul(value);
+			else if (key == "title_width") issue_title_width = std::stoul(value);
 			else if (key == "author_width") issue_author_width = std::stoul(value);
 			else if (key == "state_width") issue_state_width = std::stoul(value);
 			else if (key == "labels_width") issue_labels_width = std::stoul(value);
@@ -115,17 +117,24 @@ void Config::load(const std::filesystem::path& path) {
 			} else {
 				std::optional<Color> color = color_from_string(value);
 				if (color) {
-					if (key == "issue_number")				issue_number_color	= *color;
-					else if (key == "header_color")			header_color		= *color;
-					else if (key == "issue_title_color")	issue_title_color	= *color;
-					else if (key == "issue_title_color")	issue_title_color	= *color;
-					else if (key == "issue_open_color")		issue_open_color	= *color;
-					else if (key == "issue_closed_color")	issue_closed_color	= *color;
-					else if (key == "issue_author_color")	issue_author_color	= *color;
-					else if (key == "issue_labels_color")	issue_labels_color	= *color;
-					else if (key == "issue_parent_color")	issue_parent_color	= *color;
-					else if (key == "error_color")			error_color			= *color;
-					else if (key == "warning_color")		warning_color		= *color;
+					if (key == "issue_number")						issue_number_color			= *color;
+					else if (key == "header_color")					header_color				= *color;
+					else if (key == "issue_title_color")			issue_title_color			= *color;
+					else if (key == "issue_open_color")				issue_open_color			= *color;
+					else if (key == "issue_closed_color")			issue_closed_color			= *color;
+					else if (key == "issue_author_color")			issue_author_color			= *color;
+					else if (key == "issue_labels_color")			issue_labels_color			= *color;
+					else if (key == "issue_parent_color")			issue_parent_color			= *color;
+					else if (key == "error_color")					error_color					= *color;
+					else if (key == "warning_color")				warning_color				= *color;
+					else if (key == "project_name_color")			project_name_color			= *color;
+					else if (key == "project_path_color")			project_path_color			= *color;
+					else if (key == "project_branch_color")			project_branch_color		= *color;
+					else if (key == "project_remote_color")			project_remote_color		= *color;
+					else if (key == "project_type_color")			project_type_color			= *color;
+					else if (key == "project_short_remote_color")	project_short_remote_color	= *color;
+					else if (key == "tick_color")					tick_color					= *color;
+					else if (key == "cross_color")					cross_color					= *color;
 				}
 			}
 
