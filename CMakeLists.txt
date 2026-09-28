@@ -8,6 +8,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+include(FetchContent)
+
 add_executable(projctl
     src/main.cpp
 )
@@ -21,6 +23,14 @@ add_library(projctl_core
 	src/config.cpp
 )
 
+
+FetchContent_Declare(
+	nlohmann_json
+	GIT_REPOSITORY https://github.com/nlohmann/json.git
+	GIT_TAG v3.12.0
+)
+
+FetchContent_MakeAvailable(nlohmann_json)
 find_package(nlohmann_json REQUIRED)
 
 target_link_libraries(projctl_core
