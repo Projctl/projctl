@@ -311,7 +311,7 @@ void ProjCtl::git_push(const std::string& name) {
 
 	std::expected<std::string, std::string> result = git_interface.push(content);
 
-	std::println("{}{}{}", result ? color_code(config.tick_color) : color_code(config.error_color), result ? *result : result.error(), RESET);
+	std::println("{}{}{}{}", result ? color_code(config.tick_color) : color_code(config.error_color), result ? TICK : CROSS, result ? *result : result.error(), RESET);
 }
 
 void ProjCtl::git_push_branch(const std::string& name) {
@@ -321,7 +321,7 @@ void ProjCtl::git_push_branch(const std::string& name) {
 
 	std::expected<std::string, std::string> result = git_interface.branch(content);
 	if (!result) {
-		std::println("{}{}{}", color_code(config.error_color), result.error(), RESET);
+		std::println("{}{}{}{}", color_code(config.error_color), CROSS, result.error(), RESET);
 		return;
 	}
 
@@ -329,7 +329,7 @@ void ProjCtl::git_push_branch(const std::string& name) {
 
 	result = git_interface.push_branch(content, branch);
 
-	std::println("{}{}{}", result ? color_code(config.tick_color) : color_code(config.error_color), result ? *result : result.error(), RESET);
+	std::println("{}{}{}{}", result ? color_code(config.tick_color) : color_code(config.error_color), result ? TICK : CROSS, result ? *result : result.error(), RESET);
 }
 
 void ProjCtl::git_pull(const std::string& name) {
@@ -338,7 +338,7 @@ void ProjCtl::git_pull(const std::string& name) {
 		std::format_to(std::back_inserter(output), "{}Pulling: {}{}{}\n", color_code(config.header_color), color_code(config.project_name_color), project_name, RESET);
 		std::expected<std::string, std::string> result = git_interface.pull(content);
 
-		std::format_to(std::back_inserter(output), "{}{}{}", result ? color_code(config.tick_color) : color_code(config.error_color), result ? *result : result.error(), RESET);
+		std::format_to(std::back_inserter(output), "{}{}{}{}", result ? color_code(config.tick_color) : color_code(config.error_color), result ? TICK : CROSS, result ? *result : result.error(), RESET);
 		return output;
 	};
 
@@ -361,7 +361,7 @@ void ProjCtl::git_fetch(const std::string& name) {
 		std::format_to(std::back_inserter(output), "{}Fetching: {}{}{}\n", color_code(config.header_color), color_code(config.project_name_color), project_name, RESET);
 		std::expected<std::string, std::string> result = git_interface.fetch(content);
 
-		std::format_to(std::back_inserter(output), "{}{}{}", result ? color_code(config.tick_color) : color_code(config.error_color), result ? *result : result.error(), RESET);
+		std::format_to(std::back_inserter(output), "{}{}{}{}", result ? color_code(config.tick_color) : color_code(config.error_color), result ? TICK : CROSS, result ? *result : result.error(), RESET);
 		return output;
 	};
 
@@ -395,14 +395,14 @@ void ProjCtl::git_branch(const std::string& name, std::string_view branch) {
 
 	std::expected<std::string, std::string> result = git_interface.branch_switch(content, branch);
 
-	std::println("{}{}{}", result ? color_code(config.tick_color) : color_code(config.error_color), result ? *result : result.error(), RESET);
+	std::println("{}{}{}{}", result ? color_code(config.tick_color) : color_code(config.error_color), result ? TICK : CROSS, result ? *result : result.error(), RESET);
 }
 
 void ProjCtl::g_status () {
 	auto status_one = [&](const std::string_view name, auto* interface){
 		std::string output;
-		std::format_to(std::back_inserter(output), "{}{}{:<{}}{}{}{}{}\n", color_code(config.header_color), MARGIN, std::format("{} Cli", name), config.name_width, interface->installed() ? color_code(config.tick_color) : color_code(config.error_color), interface->installed() ? TICK : CROSS, interface->installed() ? "Installed" : "Not installed", RESET);
-		std::format_to(std::back_inserter(output), "{}{}{:<{}}{}{}{}{}\n", color_code(config.header_color), MARGIN, "Auth", config.name_width, interface->authenticated() ? color_code(config.tick_color) : color_code(config.error_color), interface->authenticated() ? TICK : CROSS, interface->authenticated() ? "Authenticated" : "Not authenticated", RESET);
+		std::format_to(std::back_inserter(output), "{}{:<{}}{}{}{}{}\n", color_code(config.header_color), std::format("{} Cli", name), config.name_width, interface->installed() ? color_code(config.tick_color) : color_code(config.error_color), interface->installed() ? TICK : CROSS, interface->installed() ? "Installed" : "Not installed", RESET);
+		std::format_to(std::back_inserter(output), "{}{:<{}}{}{}{}{}\n", color_code(config.header_color), "Auth", config.name_width, interface->authenticated() ? color_code(config.tick_color) : color_code(config.error_color), interface->authenticated() ? TICK : CROSS, interface->authenticated() ? "Authenticated" : "Not authenticated", RESET);
 		return output;
 	};
 	std::future<std::string> gh_task = std::async(std::launch::async, status_one, "GitHub", &gh_interface);
@@ -410,12 +410,12 @@ void ProjCtl::g_status () {
 	std::println("{}", gh_task.get());
 	std::println("{}", glab_task.get());
 }
-// colors from here
+
 void ProjCtl::repo_list() {
 	auto list_one = [&](const std::string_view name, auto* interface){
 		std::string output;
-		if (!interface->installed()) return std::format("{}{} is not installed{}", color_code(config.error_color), name, RESET);
-		if (!interface->authenticated()) return std::format("{}{} is not authenticated{}", color_code(config.error_color), name, RESET);
+		if (!interface->installed()) return std::format("{}{}{} is not installed{}", color_code(config.error_color), CROSS, name, RESET);
+		if (!interface->authenticated()) return std::format("{}{}{} is not authenticated{}", color_code(config.error_color), CROSS, name, RESET);
 		std::expected<std::string, std::string> repo_list = interface->repo_list();
 		std::format_to(std::back_inserter(output), "{}{} {}repos\n{}{}{}", color_code(config.project_name_color), name, color_code(config.header_color), repo_list ? color_code(config.project_short_remote_color) : color_code(config.error_color), repo_list ? *repo_list : repo_list.error(), RESET);
 		return output;
@@ -425,8 +425,6 @@ void ProjCtl::repo_list() {
 	std::println("{}\n", gh_task.get());
 	std::println("{}", glab_task.get());
 }
-
-
 
 void ProjCtl::issue_list(const std::string& name) {
 	auto format_issues = [&](const std::vector<Issue>& issues) -> std::string {
@@ -537,11 +535,11 @@ void ProjCtl::issue_list(const std::string& name) {
 				command_output = glab_interface.issue_list(remote_short);
 				break;
 			case HostOption::Unknown:
-				command_output = std::unexpected(std::format("No host found for {}", name));
+				command_output = std::unexpected(std::format("{}No host found for {}{}", color_code(config.error_color), name, RESET));
 				break;
 		}
 		if (!command_output) {
-			std::format_to(std::back_inserter(output), "Failed to list issues\n{}", command_output.error());
+			std::format_to(std::back_inserter(output), "{}Failed to list issues\n{}{}", color_code(config.error_color), command_output.error(), RESET);
 			return output;
 		}
 		if (command_output->empty()) {
