@@ -51,6 +51,7 @@ ProjCtl::ProjCtl()
 		config_path = system_interface.config_home()/"projctl/config.ini";
 		data_path = system_interface.data_home()/"projctl/projects.ini";
 		load();
+		config.load(config_path);
 	}
 
 ProjCtl::~ProjCtl() { save(); }
@@ -245,7 +246,7 @@ void ProjCtl::open(const std::string& name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 
-	system_interface.run_interactive(std::format("cd \"{}\" && nvim .", (*project)->second.path.string()));
+	system_interface.run_interactive(std::format("cd \"{}\" && {} .", (*project)->second.path.string(), config.editor));
 }
 
 void ProjCtl::build(const std::string& name) {

@@ -88,5 +88,7 @@ struct Config {
 	Color error_color				= Color::BaldRed;
 	Color warning_color				= Color::Yellow;
 
+	std::string editor				= "nvim";
+
 	void load(const std::filesystem::path& path);
 };
