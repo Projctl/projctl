@@ -90,7 +90,11 @@ void Config::load(const std::filesystem::path& path) {
 		std::string key = trim(std::string_view(line.substr(0, separator)));
 		std::string value = trim(std::string_view(line.substr(separator + 1)));
 
-		if (section == "display") {
+		if (section == "General") {
+			if (key == "editor") editor = value;
+		}
+
+		else if (section == "Display") {
 			if (key == "name_width") name_width = std::stoul(value);
 			else if (key == "max_width") max_width = std::stoul(value);
 			else if (key == "path_width") path_width = std::stoul(value);
@@ -98,7 +102,7 @@ void Config::load(const std::filesystem::path& path) {
 			else if (key == "branch_width") branch_width = std::stoul(value);
 		}
 
-		else if (section == "issues") {
+		else if (section == "Issues") {
 			if (key == "number_width") issue_number_width = std::stoul(value);
 			else if (key == "title_width") issue_title_width = std::stoul(value);
 			else if (key == "author_width") issue_author_width = std::stoul(value);
@@ -110,7 +114,7 @@ void Config::load(const std::filesystem::path& path) {
 			}
 		}
 
-		else if (section == "colors") {
+		else if (section == "Colors") {
 			if (key == "enabled") {
 				colors_enabled = value == "true";
 			} else {
