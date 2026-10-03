@@ -246,7 +246,7 @@ void ProjCtl::open(const std::string& name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 
-	if (config.editor == "neovide") system_interface.run_interactive(std::format("cd \"{}\" && {} . &", (*project)->second.path.string(), config.editor));
+	if (config.editor == "neovide" || config.editor == "emacs") system_interface.run_interactive(std::format("cd \"{}\" && {} . &", (*project)->second.path.string(), config.editor));
 	else system_interface.run_interactive(std::format("cd \"{}\" && {} .", (*project)->second.path.string(), config.editor));
 }
 
