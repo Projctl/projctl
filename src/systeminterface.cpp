@@ -39,7 +39,7 @@ std::filesystem::path SystemInterface::data_home() {
 
 	const char* home = std::getenv("HOME");
 
-	if (home && *home != '\0') return std::filesystem::path{home}/".config";
+	if (home && *home != '\0') return std::filesystem::path{home}/".local/share";
 
 	return {};
 }
