@@ -8,6 +8,7 @@
 #include <functional>
 #include <iterator>
 #include "config.hpp"
+#include "systeminterface.hpp"
 
 void ProjCtl::list() {
 	auto list_one = [&](const std::string& name, const ProjectContent& content) { return std::format("{}{:<{}}{}{:<{}}{}", color_code(config.project_name_color), truncate(name, config.name_width), config.name_width, color_code(config.project_path_color), truncate(content.path.string(), config.path_width), config.path_width, RESET); };
@@ -65,8 +66,8 @@ void ProjCtl::open(const std::string& name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
 
-	if (config.editor == "neovide" || config.editor == "emacs") system_interface.run_interactive(std::format("cd \"{}\" && {} . &", (*project)->second.path.string(), config.editor));
-	else system_interface.run_interactive(std::format("cd \"{}\" && {} .", (*project)->second.path.string(), config.editor));
+	if (config.editor == "neovide" || config.editor == "emacs") SystemInterface::run_interactive(std::format("cd \"{}\" && {} . &", (*project)->second.path.string(), config.editor));
+	else SystemInterface::run_interactive(std::format("cd \"{}\" && {} .", (*project)->second.path.string(), config.editor));
 }
 
 void ProjCtl::build(const std::string& name) {
@@ -82,7 +83,7 @@ void ProjCtl::build(const std::string& name) {
 
 		std::string command = std::format("cd \"{}\" && {}", content.path.string(), *command_option);
 
-		std::format_to(std::back_inserter(output), "{}\n", *system_interface.run(command));
+		std::format_to(std::back_inserter(output), "{}\n", *SystemInterface::run(command));
 		return output;
 	};
 	if (name == "--all") {
@@ -112,5 +113,5 @@ void ProjCtl::run(const std::string& name) {
 
 	std::string command = std::format("cd \"{}\" && ", content.path.string(), *command_option);
 
-	std::println("{}", *system_interface.run(command));
+	std::println("{}", *SystemInterface::run(command));
 }

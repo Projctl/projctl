@@ -1,19 +1,17 @@
 #include "gitlabinterface.hpp"
+
+#include "systeminterface.hpp"
 #include <nlohmann/json.hpp>
 
-GitLabInterface::GitLabInterface(SystemInterface& system_interface)
-	: system_interface(system_interface) {
-	}
-
 bool GitLabInterface::installed() const {
-	return system_interface.run("command -v glab").has_value();
+	return SystemInterface::run("command -v glab").has_value();
 }
 bool GitLabInterface::authenticated() const {
-	return system_interface.run("glab auth status >/dev/null 2>&1").has_value();
+	return SystemInterface::run("glab auth status >/dev/null 2>&1").has_value();
 }
 
 std::expected<std::string, std::string> GitLabInterface::repo_list() {
-	std::optional<std::string> output = system_interface.run("glab repo list | awk 'NR > 3 { print $1 }'");
+	std::optional<std::string> output = SystemInterface::run("glab repo list | awk 'NR > 3 { print $1 }'");
 
 	if (!output) return std::unexpected("Failed to get GitLab repo list");
 	return *output;
@@ -23,7 +21,7 @@ std::expected<std::vector<Issue>, std::string> GitLabInterface::issue_list(std::
 	if (!installed()) return std::unexpected("GitLab not installed");
 
 	std::string command = std::format("glab issue list --repo {} --output json", remote_short);
-	std::optional<std::string> output = system_interface.run(command);
+	std::optional<std::string> output = SystemInterface::run(command);
 
 	if (!output) return std::unexpected(std::format("Failed to get GitLab issue list for repo {}", remote_short));
 	nlohmann::json json = nlohmann::json::parse(*output);

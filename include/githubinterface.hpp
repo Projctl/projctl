@@ -1,6 +1,5 @@
 #pragma once
 
-#include "systeminterface.hpp"
 #include "issue.hpp"
 
 #include <vector>
@@ -8,10 +7,7 @@
 #include <string>
 
 class GitHubInterface {
-	SystemInterface& system_interface;
-
 	public:
-	GitHubInterface(SystemInterface& system_interface);
 	bool installed() const;
 	bool authenticated() const;
 	std::expected<std::string, std::string>repo_list();

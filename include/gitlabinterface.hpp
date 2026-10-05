@@ -1,6 +1,5 @@
 #pragma once
 
-#include "systeminterface.hpp"
 #include "issue.hpp"
 
 #include <expected>
@@ -8,10 +7,7 @@
 
 
 class GitLabInterface {
-	SystemInterface& system_interface;
-
 	public:
-	GitLabInterface(SystemInterface& system_interface);
 	bool installed() const;
 	bool authenticated() const;
 	std::expected<std::string, std::string> repo_list();

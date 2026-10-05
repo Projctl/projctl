@@ -1,8 +1,6 @@
 #pragma once
 
 #include "projectcontent.hpp"
-#include "systeminterface.hpp"
-#include "gitinterface.hpp"
 #include "githubinterface.hpp"
 #include "gitlabinterface.hpp"
 #include "config.hpp"
@@ -24,8 +22,6 @@ class ProjCtl
 	std::filesystem::path config_path;
 	Config config;
 	std::filesystem::path data_path;
-	SystemInterface system_interface;
-	GitInterface git_interface;
 	GitHubInterface gh_interface;
 	GitLabInterface glab_interface;
 	void load();

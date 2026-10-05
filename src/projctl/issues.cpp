@@ -8,6 +8,7 @@
 #include <functional>
 #include <iterator>
 #include "config.hpp"
+#include "gitinterface.hpp"
 
 void ProjCtl::issue_list(const std::string& name) {
 	auto format_issues = [&](const std::vector<Issue>& issues) -> std::string {
@@ -100,11 +101,11 @@ void ProjCtl::issue_list(const std::string& name) {
 		return output;
 	};
 	auto issue_one = [&](const std::string& name, const ProjectContent& content) -> std::string {
-		std::expected<HostOption, std::string> host_option = git_interface.host(content);
+		std::expected<HostOption, std::string> host_option = GitInterface::host(content);
 		if (!host_option) return std::format("{}Failed to get host {}{}", color_code(config.error_color), host_option.error(), RESET);
 		HostOption host = *host_option;
 
-		std::expected<std::string, std::string> remote_short_option = git_interface.remote_short(content);
+		std::expected<std::string, std::string> remote_short_option = GitInterface::remote_short(content);
 		if (!remote_short_option) return std::format("{}Failed to get short remote for {}{}", color_code(config.error_color), name, RESET);
 		std::string_view remote_short = *remote_short_option;
 
@@ -138,7 +139,7 @@ void ProjCtl::issue_list(const std::string& name) {
 	if (name == "--all") {
 		std::vector<std::future<std::string>> tasks;
 		tasks.reserve(projects.size());
-		for (const decltype(projects)::value_type& project : projects) if (git_interface.is_repo(project.second)) tasks.push_back(std::async(std::launch::async, issue_one, std::cref(project.first), std::cref(project.second)));
+		for (const decltype(projects)::value_type& project : projects) if (GitInterface::is_repo(project.second)) tasks.push_back(std::async(std::launch::async, issue_one, std::cref(project.first), std::cref(project.second)));
 		for (std::future<std::string>& task : tasks) println("{}", task.get());
 		return;
 	}

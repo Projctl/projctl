@@ -4,13 +4,11 @@
 #include <fstream>
 #include <print>
 #include "config.hpp"
+#include "systeminterface.hpp"
 
-ProjCtl::ProjCtl()
-	:git_interface(system_interface),
-	gh_interface(system_interface),
-	glab_interface(system_interface) {
-		config_path = system_interface.config_home()/"projctl/config.ini";
-		data_path = system_interface.data_home()/"projctl/projects.ini";
+ProjCtl::ProjCtl() {
+		config_path = SystemInterface::config_home()/"projctl/config.ini";
+		data_path = SystemInterface::data_home()/"projctl/projects.ini";
 		load();
 		config.load(config_path);
 	}

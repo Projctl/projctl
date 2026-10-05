@@ -1,7 +1,6 @@
 #pragma once
 
 #include "projectcontent.hpp"
-#include "systeminterface.hpp"
 
 #include <expected>
 #include <string>
@@ -13,11 +12,8 @@ enum class HostOption {
 	Unknown
 };
 
-class GitInterface {
-	SystemInterface& system_interface;
+namespace GitInterface {
 	std::expected<std::string, std::string> add(const ProjectContent&);
-	public:
-	GitInterface(SystemInterface&);
 	bool is_repo(const ProjectContent&);
 	std::expected<std::string, std::string> changes(const ProjectContent&);
 	std::expected<std::string, std::string> branch(const ProjectContent&);

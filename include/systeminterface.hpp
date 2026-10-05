@@ -4,11 +4,10 @@
 #include <string>
 #include <filesystem>
 
-class SystemInterface {
-	public:
-		std::optional<std::string> run(const std::string&);
-		int run_interactive(const std::string&);
-		std::filesystem::path config_home();
-		std::filesystem::path data_home();
-		std::filesystem::path cache_home();
+namespace SystemInterface {
+	[[nodiscard]] std::optional<std::string> run(const std::string&);
+	int run_interactive(const std::string&);
+	[[nodiscard]] std::filesystem::path config_home();
+	[[nodiscard]] std::filesystem::path data_home();
+	[[nodiscard]] std::filesystem::path cache_home();
 };
