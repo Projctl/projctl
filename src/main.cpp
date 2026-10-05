@@ -20,6 +20,7 @@ enum class CommandOption {
 	GStatus,
 	RepoList,
 	IssueList,
+	AutoMerge,
 	Idk
 };
 
@@ -31,6 +32,7 @@ namespace {
 			case 's':
 				return CommandOption::Status;
 			case 'a':
+				if (command == "automerge") return CommandOption::AutoMerge;
 				return CommandOption::Add;
 			case 'p':
 				if (command == "push") return CommandOption::Push;
@@ -166,6 +168,16 @@ int main(const int argc, const char **argv) {
 											}
 											continue;
 										}
+			case CommandOption::AutoMerge: {
+											   if (arg_iterator + 1 >= argc) {
+												   std::println("You're missing some arguments!");
+												   continue;
+											   }
+											   std::string name = argv[arg_iterator++];
+											   std::string_view message = argv[arg_iterator++];
+											   proj_ctl.git_automerge(name, message);
+											   continue;
+										   }
 			case CommandOption::Push: {
 										  if (arg_iterator < argc && std::string(argv[arg_iterator]) == "branch") {
 											  ++arg_iterator;
