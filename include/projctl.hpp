@@ -44,6 +44,8 @@ class ProjCtl
 	void git_fetch(const std::string&);
 	void git_branch_list(const std::string&);
 	void git_branch(const std::string&, std::string_view);
+	bool git_merge(const std::string&);
+	void git_automerge(const std::string&, std::string_view);
 	void g_status();
 	void repo_list();
 	void issue_list(const std::string& name);

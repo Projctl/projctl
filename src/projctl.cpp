@@ -306,6 +306,27 @@ void ProjCtl::git_commit(const std::string& name, std::string_view message) {
 	std::println("{}{}{}{}", result ? color_code(config.tick_color) : color_code(config.error_color), result ? TICK : CROSS, result ? *result : result.error(), RESET);
 }
 
+bool ProjCtl::git_merge(const std::string& name) {
+	std::optional project = project_find(name);
+	if (!project) return false;
+	const ProjectContent& content = (*project)->second;
+
+	std::expected<std::string, std::string> result = git_interface.default_merge(content);
+	if (!result) {
+		std::println("{}{}{}", color_code(config.error_color), CROSS, result.error());
+		return false;
+	}
+
+	std::println("{}{}{}", color_code(config.tick_color), TICK, *result);
+	return true;
+}
+
+void ProjCtl::git_automerge(const std::string& name, std::string_view message) {
+	if (!git_merge(name)) return;
+	git_commit(name, message);
+	git_push(name);
+}
+
 void ProjCtl::git_push(const std::string& name) {
 	ProjectIteratorResult project = project_find(name);
 	if (!project) return;
@@ -567,3 +588,4 @@ void ProjCtl::issue_list(const std::string& name) {
 	const ProjectContent& content = (*project_option)->second;
 	std::println("{}", issue_one(name, content));
 }
+
