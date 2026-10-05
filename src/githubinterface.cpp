@@ -1,32 +1,28 @@
 #include "githubinterface.hpp"
 
-#include <format>
+#include "systeminterface.hpp"
 #include <nlohmann/json.hpp>
 
-GitHubInterface::GitHubInterface(SystemInterface& system_interface)
-	: system_interface(system_interface) {
-	}
-
 bool GitHubInterface::installed() const {
-	return system_interface.run("command -v gh").has_value();
+	return SystemInterface::run("command -v gh").has_value();
 }
 bool GitHubInterface::authenticated() const {
-	return system_interface.run("gh auth status").has_value();
+	return SystemInterface::run("gh auth status").has_value();
 }
 
-std::expected<std::string, std::string> GitHubInterface::repo_list() {
-	std::optional<std::string> output = system_interface.run("gh repo list | awk '{ print $1 }'");
+std::expected<std::string, std::string> GitHubInterface::repo_list() const {
+	std::optional<std::string> output = SystemInterface::run("gh repo list | awk '{ print $1 }'");
 
 	if (!output) return std::unexpected("Failed to get GitHub repo list");
 
 	return *output;
 }
 
-std::expected<std::vector<Issue>, std::string> GitHubInterface::issue_list(std::string_view remote_short) {
+std::expected<std::vector<Issue>, std::string> GitHubInterface::issue_list(std::string_view remote_short) const {
 	if (!installed()) return std::unexpected("GitHub not installed");
 
 	std::string command = std::format("CLICOLOR_FORCE=0 NO_COLOR=1 gh issue list --repo {} --json number,title,state,author,labels,createdAt,updatedAt,parent", remote_short);
-	std::optional<std::string> output = system_interface.run(command);
+	std::optional<std::string> output = SystemInterface::run(command);
 
 	if (!output) return std::unexpected(std::format("Failed to get GitHub issue list for repo {}", remote_short));
 	nlohmann::json json = nlohmann::json::parse(*output);

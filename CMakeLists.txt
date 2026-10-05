@@ -14,7 +14,12 @@ add_executable(projctl
 )
 
 add_library(projctl_core
-	src/projctl.cpp
+	src/projctl/core.cpp
+	src/projctl/git.cpp
+	src/projctl/hosting.cpp
+	src/projctl/issues.cpp
+	src/projctl/projects.cpp
+	src/projctl/helper.cpp
 	src/systeminterface.cpp
 	src/gitinterface.cpp
 	src/githubinterface.cpp

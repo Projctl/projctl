@@ -1,15 +1,12 @@
 #include "gitinterface.hpp"
+#include "systeminterface.hpp"
 
 #include <format>
 #include <optional>
 
-GitInterface::GitInterface(SystemInterface& system_interface)
-	: system_interface(system_interface) {
-}
-
 bool GitInterface::is_repo(const ProjectContent& project) {
 	std::string command = std::format("git -C \"{}\" rev-parse --is-inside-work-tree", project.path.string());
-	std::optional<std::string> output = system_interface.run(command);
+	std::optional<std::string> output = SystemInterface::run(command);
 	return output && *output == "true";
 }
 
@@ -17,7 +14,7 @@ std::expected<std::string, std::string> GitInterface::changes(const ProjectConte
 	if (!is_repo(project)) [[unlikely]] return std::unexpected("Not a git repo");
 
 	std::string command = std::format("git -C \"{}\" status --porcelain", project.path.string());
-	std::optional<std::string> output = system_interface.run(command);
+	std::optional<std::string> output = SystemInterface::run(command);
 
 	if (!output) [[unlikely]] return std::unexpected("Git status failed");
 	return *output;
@@ -27,7 +24,7 @@ std::expected<std::string, std::string> GitInterface::branch(const ProjectConten
 	if (!is_repo(project)) [[unlikely]] return std::unexpected("Not a git repo");
 
 	std::string command = std::format("git -C \"{}\" branch --show-current", project.path.string());
-	std::optional<std::string> output = system_interface.run(command);
+	std::optional<std::string> output = SystemInterface::run(command);
 
 	if (!output) [[unlikely]] return std::unexpected("Git remote failed");
 	return *output;
@@ -37,7 +34,7 @@ std::expected<std::string, std::string> GitInterface::branch_list(const ProjectC
 	if (!is_repo(project)) [[unlikely]] return std::unexpected("Not a git repo");
 
 	std::string command = std::format("git -C \"{}\" branch --list", project.path.string());
-	std::optional<std::string> output = system_interface.run(command);
+	std::optional<std::string> output = SystemInterface::run(command);
 
 	if (!output) [[unlikely]] return std::unexpected("Git remote failed");
 	return *output;
@@ -47,12 +44,12 @@ std::expected<std::string, std::string> GitInterface::branch_switch(const Projec
 	if (!is_repo(project)) [[unlikely]] return std::unexpected("Not a git repo");
 
 	std::string command = std::format("git -C \"{}\" branch --list \"{}\" 2>&1", project.path.string(), branch);
-	std::optional<std::string> output = system_interface.run(command);
+	std::optional<std::string> output = SystemInterface::run(command);
 	if (!output) [[unlikely]] return std::unexpected("Git branch --list failed");
 
 	bool branch_exists = !output->empty();
 	command = std::format("git -C \"{}\" switch {}\"{}\" 2>&1", project.path.string(), branch_exists ? "" : "-c " , branch);
-	output = system_interface.run(command);
+	output = SystemInterface::run(command);
 	if (!output) [[unlikely]] return std::unexpected(branch_exists ? "Git branch switch failed" : "Git branch creation failed");
 	return *output;
 }
@@ -61,7 +58,7 @@ std::expected<std::string, std::string> GitInterface::remote(const ProjectConten
 	if (!is_repo(project)) [[unlikely]] return std::unexpected("Not a git repo");
 
 	std::string command = std::format("git -C \"{}\" remote get-url origin", project.path.string());
-	std::optional<std::string> output = system_interface.run(command);
+	std::optional<std::string> output = SystemInterface::run(command);
 
 	if (!output) [[unlikely]] return std::unexpected("Git remote failed");
 	return *output;
@@ -120,7 +117,7 @@ std::expected<std::string, std::string> GitInterface::add(const ProjectContent& 
 	if (!is_repo(project)) [[unlikely]] return std::unexpected("Not a git repo");
 
 	std::string command = std::format("git -C \"{}\" add . 2>&1", project.path.string());
-	std::optional<std::string> result = system_interface.run(command);
+	std::optional<std::string> result = SystemInterface::run(command);
 
 	if (!result) [[unlikely]] return std::unexpected("Git add failed");
 	return *result;
@@ -134,7 +131,7 @@ std::expected<std::string, std::string> GitInterface::commit(const ProjectConten
 
 	std::string command = std::format("git -C \"{}\" commit -m \"{}\" 2>&1", project.path.string(), message);
 
-	std::optional<std::string> commit_output = system_interface.run(command);
+	std::optional<std::string> commit_output = SystemInterface::run(command);
 	if (!commit_output) [[unlikely]] return std::unexpected("Git commit failed");
 
 	add_output->append("\n");
@@ -147,7 +144,7 @@ std::expected<std::string, std::string> GitInterface::default_merge(const Projec
 	if (!is_repo(project)) [[unlikely]] return std::unexpected("Not a git repo");
 
 	std::string command = std::format("git -C \"{}\" merge", project.path.string());
-	std::optional<std::string> result = system_interface.run(command);
+	std::optional<std::string> result = SystemInterface::run(command);
 
 	if (!result) [[unlikely]] return std::unexpected("Git merge failed");
 	return *result;
@@ -158,7 +155,7 @@ std::expected<std::string, std::string> GitInterface::push(const ProjectContent&
 
 	std::string command = std::format("git -C \"{}\" push 2>&1", project.path.string());
 
-	std::optional<std::string> result = system_interface.run(command);
+	std::optional<std::string> result = SystemInterface::run(command);
 
 	if (!result) [[unlikely]] return std::unexpected("Git push failed");
 
@@ -170,7 +167,7 @@ std::expected<std::string, std::string> GitInterface::push_branch(const ProjectC
 
 	std::string command = std::format("git -C \"{}\" push -u origin {} 2>&1", project.path.string(), branch);
 
-	std::optional<std::string> result = system_interface.run(command);
+	std::optional<std::string> result = SystemInterface::run(command);
 
 	if (!result) [[unlikely]] return std::unexpected("Git push failed");
 
@@ -182,7 +179,7 @@ std::expected<std::string, std::string> GitInterface::pull(const ProjectContent&
 
 	std::string command = std::format("git -C \"{}\" pull 2>&1", project.path.string());
 
-	std::optional<std::string> result = system_interface.run(command);
+	std::optional<std::string> result = SystemInterface::run(command);
 
 	if (!result) [[unlikely]] return std::unexpected("Git pull failed");
 
@@ -193,7 +190,7 @@ std::expected<std::string, std::string> GitInterface::fetch(const ProjectContent
 
 	std::string command = std::format("git -C \"{}\" fetch 2>&1", project.path.string());
 
-	std::optional<std::string> result = system_interface.run(command);
+	std::optional<std::string> result = SystemInterface::run(command);
 
 	if (!result) [[unlikely]] return std::unexpected("Git fetch failed");
 

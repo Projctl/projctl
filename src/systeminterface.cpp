@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 
+
 std::optional<std::string> SystemInterface::run(const std::string &command) {
 	FILE *pipe = popen(command.c_str(), "r");
 	if (!pipe) [[unlikely]] return std::nullopt;
