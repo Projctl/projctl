@@ -23,6 +23,7 @@ class ProjCtl
 	void load();
 	void save();
 	std::optional<std::map<std::string, ProjectContent>::const_iterator> project_find(const std::string&);
+	std::optional<std::string> current_project_name() const;
 
 	public:
 	ProjCtl();
