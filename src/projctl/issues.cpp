@@ -10,7 +10,7 @@
 #include "config.hpp"
 #include "gitinterface.hpp"
 
-void ProjCtl::issue_list(const std::string& name) {
+void ProjCtl::issue_list(const std::string& name) const {
 	auto format_issues = [&](const std::vector<Issue>& issues) -> std::string {
 		std::string output;
 		auto field_name = [&](IssueField field) -> std::string_view {
@@ -39,7 +39,7 @@ void ProjCtl::issue_list(const std::string& name) {
 				default:				  return 0;
 			}
 		};
-		auto field_color = [&](IssueField field, const Issue& issue) -> Color {
+		auto field_color = [&](IssueField field, const Issue& issue) -> Style::Color {
 			switch (field) {
 				case IssueField::Number:
 					return config.issue_number_color;
@@ -54,12 +54,12 @@ void ProjCtl::issue_list(const std::string& name) {
 				case IssueField::Parent:
 					return config.issue_parent_color;
 				default:
-					return Color::Default;
+					return Style::Color::Default;
 			}
 		};
 		output += color_code(config.header_color);
 		for (IssueField field : config.issue_columns) std::format_to(std::back_inserter(output), "{:<{}}", field_name(field), field_width(field));
-		output += RESET;
+		output += Style::RESET;
 		output += '\n';
 		for (const Issue& issue : issues) {
 			for (IssueField field : config.issue_columns) {
@@ -94,7 +94,7 @@ void ProjCtl::issue_list(const std::string& name) {
 						value = issue.parent ? std::format("#{}", *issue.parent) : "-";
 						break;
 				}
-				std::format_to(std::back_inserter(output), "{}{:<{}}{}", color_code(field_color(field, issue)), value, field_width(field), RESET);
+				std::format_to(std::back_inserter(output), "{}{:<{}}{}", color_code(field_color(field, issue)), value, field_width(field), Style::RESET);
 			}
 			output += '\n';
 		}
@@ -102,14 +102,14 @@ void ProjCtl::issue_list(const std::string& name) {
 	};
 	auto issue_one = [&](const std::string& name, const ProjectContent& content) -> std::string {
 		std::expected<HostOption, std::string> host_option = GitInterface::host(content);
-		if (!host_option) return std::format("{}Failed to get host {}{}", color_code(config.error_color), host_option.error(), RESET);
+		if (!host_option) return std::format("{}Failed to get host {}{}", color_code(config.error_color), host_option.error(), Style::RESET);
 		HostOption host = *host_option;
 
 		std::expected<std::string, std::string> remote_short_option = GitInterface::remote_short(content);
-		if (!remote_short_option) return std::format("{}Failed to get short remote for {}{}", color_code(config.error_color), name, RESET);
+		if (!remote_short_option) return std::format("{}Failed to get short remote for {}{}", color_code(config.error_color), name, Style::RESET);
 		std::string_view remote_short = *remote_short_option;
 
-		std::string output = std::format("{}Issues for {}{}{}:\n", color_code(config.header_color), color_code(config.project_name_color), name, RESET);
+		std::string output = std::format("{}Issues for {}{}{}:\n", color_code(config.header_color), color_code(config.project_name_color), name, Style::RESET);
 		std::expected<std::vector<Issue>, std::string> command_output;
 		switch (host) {
 			case HostOption::GitHub:
@@ -119,15 +119,15 @@ void ProjCtl::issue_list(const std::string& name) {
 				command_output = glab_interface.issue_list(remote_short);
 				break;
 			case HostOption::Unknown:
-				command_output = std::unexpected(std::format("{}No host found for {}{}", color_code(config.error_color), name, RESET));
+				command_output = std::unexpected(std::format("{}No host found for {}{}", color_code(config.error_color), name, Style::RESET));
 				break;
 		}
 		if (!command_output) {
-			std::format_to(std::back_inserter(output), "{}Failed to list issues\n{}{}", color_code(config.error_color), command_output.error(), RESET);
+			std::format_to(std::back_inserter(output), "{}Failed to list issues\n{}{}", color_code(config.error_color), command_output.error(), Style::RESET);
 			return output;
 		}
 		if (command_output->empty()) {
-			std::format_to(std::back_inserter(output), "{}No issues found{}\n", color_code(config.error_color), RESET);
+			std::format_to(std::back_inserter(output), "{}No issues found{}\n", color_code(config.error_color), Style::RESET);
 			return output;
 		}
 		std::vector<Issue> issues = *command_output;

@@ -10,14 +10,14 @@ bool GitLabInterface::authenticated() const {
 	return SystemInterface::run("glab auth status >/dev/null 2>&1").has_value();
 }
 
-std::expected<std::string, std::string> GitLabInterface::repo_list() {
+std::expected<std::string, std::string> GitLabInterface::repo_list() const {
 	std::optional<std::string> output = SystemInterface::run("glab repo list | awk 'NR > 3 { print $1 }'");
 
 	if (!output) return std::unexpected("Failed to get GitLab repo list");
 	return *output;
 }
 
-std::expected<std::vector<Issue>, std::string> GitLabInterface::issue_list(std::string_view remote_short) {
+std::expected<std::vector<Issue>, std::string> GitLabInterface::issue_list(std::string_view remote_short) const {
 	if (!installed()) return std::unexpected("GitLab not installed");
 
 	std::string command = std::format("glab issue list --repo {} --output json", remote_short);

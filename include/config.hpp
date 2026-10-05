@@ -4,54 +4,8 @@
 
 #include <vector>
 #include <filesystem>
+#include "style.hpp"
 
-enum class Color {
-	Default,
-	Black,
-	BaldBlack,
-	Red,
-	BaldRed,
-	Green,
-	BaldGreen,
-	Yellow,
-	BaldYellow,
-	Blue,
-	BaldBlue,
-	Magenta,
-	BaldMagenta,
-	Cyan,
-	BaldCyan,
-	White,
-	BaldWhite,
-};
-
-constexpr std::string_view color_code(Color color) {
-	switch (color) {
-		case Color::Default:	return "\033[39m";
-		case Color::Black:		return "\033[30m";
-		case Color::BaldBlack:	return "\033[1;30m";
-		case Color::Red:		return "\033[31m";
-		case Color::BaldRed:	return "\033[1;31m";
-		case Color::Green:		return "\033[32m";
-		case Color::BaldGreen:  return "\033[1;32m";
-		case Color::Yellow:		return "\033[33m";
-		case Color::BaldYellow:	return "\033[1;33m";
-		case Color::Blue:		return "\033[34m";
-		case Color::BaldBlue:	return "\033[1;34m";
-		case Color::Magenta:	return "\033[35m";
-		case Color::BaldMagenta:return "\033[1;35m";
-		case Color::Cyan:		return "\033[36m";
-		case Color::BaldCyan:	return "\033[1;36m";
-		case Color::White:		return "\033[37m";
-		case Color::BaldWhite:	return "\033[1;37m";
-	}
-
-	return "\033[39m";
-}
-
-constexpr std::string_view RESET = "\033[0m";
-constexpr std::string_view TICK = "✓ ";
-constexpr std::string_view CROSS = "✗ ";
 
 struct Config {
 	std::size_t max_width			= 300;
@@ -69,26 +23,26 @@ struct Config {
 
 	bool colors_enabled = true;
 
-	Color header_color				= Color::Cyan;
-	Color project_name_color		= Color::BaldYellow;
-	Color project_path_color		= Color::Magenta;
-	Color project_branch_color		= Color::Cyan;
-	Color project_remote_color		= Color::Blue;
-	Color project_type_color		= Color::BaldMagenta;
-	Color project_short_remote_color= Color::BaldBlue;
-	Color tick_color				= Color::BaldGreen;
-	Color cross_color				= Color::BaldRed;
-	Color issue_number_color		= Color::BaldMagenta;
-	Color issue_title_color			= Color::White;
-	Color issue_open_color			= Color::BaldGreen;
-	Color issue_closed_color		= Color::BaldRed;
-	Color issue_author_color		= Color::Blue;
-	Color issue_labels_color		= Color::Magenta;
-	Color issue_parent_color		= Color::Cyan;
-	Color error_color				= Color::BaldRed;
-	Color warning_color				= Color::Yellow;
+	Style::Color header_color				= Style::Color::Cyan;
+	Style::Color project_name_color			= Style::Color::BaldYellow;
+	Style::Color project_path_color			= Style::Color::Magenta;
+	Style::Color project_branch_color		= Style::Color::Cyan;
+	Style::Color project_remote_color		= Style::Color::Blue;
+	Style::Color project_type_color			= Style::Color::BaldMagenta;
+	Style::Color project_short_remote_color = Style::Color::BaldBlue;
+	Style::Color tick_color					= Style::Color::BaldGreen;
+	Style::Color cross_color				= Style::Color::BaldRed;
+	Style::Color issue_number_color			= Style::Color::BaldMagenta;
+	Style::Color issue_title_color			= Style::Color::White;
+	Style::Color issue_open_color			= Style::Color::BaldGreen;
+	Style::Color issue_closed_color			= Style::Color::BaldRed;
+	Style::Color issue_author_color			= Style::Color::Blue;
+	Style::Color issue_labels_color			= Style::Color::Magenta;
+	Style::Color issue_parent_color			= Style::Color::Cyan;
+	Style::Color error_color				= Style::Color::BaldRed;
+	Style::Color warning_color				= Style::Color::Yellow;
 
-	std::string editor				= "nvim";
+	std::string editor						= "nvim";
 
 	void load(const std::filesystem::path& path);
 };

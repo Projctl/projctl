@@ -75,7 +75,7 @@ void ProjCtl::load() {
 	}
 }
 
-void ProjCtl::save() {
+void ProjCtl::save() const {
 	std::ofstream projects(data_path);
 
 	for (const decltype(this->projects)::value_type &project : this->projects) {
@@ -99,19 +99,19 @@ std::optional<std::string> ProjCtl::current_project_name() const {
 	return std::nullopt;
 }
 
-ProjectIteratorResult ProjCtl::project_find(const std::string &name) {
+ProjectIteratorResult ProjCtl::project_find(const std::string &name) const {
 	std::optional<std::string> actual_name;
 	if (name == ".") {
 		actual_name = current_project_name();
 		if (!actual_name) {
-			std::println("{}{}Current directory isn't a saved project!{}", color_code(config.error_color), MARGIN, RESET);
+			std::println("{}{}Current directory isn't a saved project!{}", color_code(config.error_color), MARGIN, Style::RESET);
 			return std::nullopt;
 		}
 	}
 	else actual_name = name;
 	std::map<std::string, ProjectContent>::const_iterator project = projects.find(*actual_name);
 	if (project == projects.end()) {
-		std::println("{}{}Project with name {} doesn't exist!{}", color_code(config.error_color), MARGIN, name, RESET);
+		std::println("{}{}Project with name {} doesn't exist!{}", color_code(config.error_color), MARGIN, name, Style::RESET);
 		return std::nullopt;
 	}
 	return project;

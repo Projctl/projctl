@@ -51,16 +51,16 @@ std::vector<IssueField> parse_issue_fields(std::string_view value) {
 	return fields;
 }
 
-std::optional<Color> color_from_string(std::string_view value) {
-	if (value == "default") return Color::Default;
-	if (value == "black") return Color::Black;
-	if (value == "red") return Color::Red;
-	if (value == "green") return Color::Green;
-	if (value == "yellow") return Color::Yellow;
-	if (value == "blue") return Color::Blue;
-	if (value == "magenta") return Color::Magenta;
-	if (value == "cyan") return Color::Cyan;
-	if (value == "white") return Color::White;
+std::optional<Style::Color> color_from_string(std::string_view value) {
+	if (value == "default") return Style::Color::Default;
+	if (value == "black") return Style::Color::Black;
+	if (value == "red") return Style::Color::Red;
+	if (value == "green") return Style::Color::Green;
+	if (value == "yellow") return Style::Color::Yellow;
+	if (value == "blue") return Style::Color::Blue;
+	if (value == "magenta") return Style::Color::Magenta;
+	if (value == "cyan") return Style::Color::Cyan;
+	if (value == "white") return Style::Color::White;
 
 	return std::nullopt;
 }
@@ -118,7 +118,7 @@ void Config::load(const std::filesystem::path& path) {
 			if (key == "enabled") {
 				colors_enabled = value == "true";
 			} else {
-				std::optional<Color> color = color_from_string(value);
+				std::optional<Style::Color> color = color_from_string(value);
 				if (color) {
 					if (key == "issue_number")						issue_number_color			= *color;
 					else if (key == "header_color")					header_color				= *color;
