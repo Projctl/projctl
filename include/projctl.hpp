@@ -10,6 +10,14 @@
 #include <filesystem>
 #include <map>
 
+using ProjectIteratorResult = std::optional<std::map<std::string, ProjectContent>::const_iterator>;
+
+constexpr std::string_view MARGIN = "    ";
+
+ProjectType detect_project_type(const std::filesystem::path&);
+std::string trim(std::string_view);
+std::string truncate(std::string_view, size_t);
+
 class ProjCtl
 {
 	std::map<std::string, ProjectContent> projects;
