@@ -56,14 +56,14 @@ void ProjCtl::remove(const std::string& name) {
 }
 
 void ProjCtl::path_show(const std::string& name) const {
-	ProjectIteratorResult project = project_find(name);
+	std::optional project = project_find(name);
 	if (!project) return;
 
 	std::println("{}", (*project)->second.path.string());
 }
 
 void ProjCtl::open(const std::string& name) const {
-	ProjectIteratorResult project = project_find(name);
+	std::optional project = project_find(name);
 	if (!project) return;
 
 	if (config.editor == "neovide" || config.editor == "emacs") SystemInterface::run_interactive(std::format("cd \"{}\" && {} . &", (*project)->second.path.string(), config.editor));
@@ -94,14 +94,14 @@ void ProjCtl::build(const std::string& name) const {
 		return;
 	}
 
-	ProjectIteratorResult project = project_find(name);
+	std::optional project = project_find(name);
 	if (!project) return;
 	const ProjectContent& content = (*project)->second;
 	std::println("{}", build_one(name, content));
 }
 
 void ProjCtl::run(const std::string& name) const {
-	ProjectIteratorResult project = project_find(name);
+	std::optional project = project_find(name);
 	if (!project) return;
 	const ProjectContent& content = (*project)->second;
 

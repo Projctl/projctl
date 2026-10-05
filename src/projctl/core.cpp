@@ -99,7 +99,7 @@ std::optional<std::string> ProjCtl::current_project_name() const {
 	return std::nullopt;
 }
 
-ProjectIteratorResult ProjCtl::project_find(const std::string &name) const {
+std::optional<std::map<std::string, ProjectContent>::const_iterator> ProjCtl::project_find(const std::string& name) const {
 	std::optional<std::string> actual_name;
 	if (name == ".") {
 		actual_name = current_project_name();

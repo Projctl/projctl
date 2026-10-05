@@ -8,8 +8,6 @@
 #include <filesystem>
 #include <map>
 
-using ProjectIteratorResult = std::optional<std::map<std::string, ProjectContent>::const_iterator>;
-
 constexpr std::string_view MARGIN = "    ";
 
 ProjectType detect_project_type(const std::filesystem::path&);

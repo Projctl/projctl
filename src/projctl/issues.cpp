@@ -144,7 +144,7 @@ void ProjCtl::issue_list(const std::string& name) const {
 		return;
 	}
 
-	ProjectIteratorResult project_option = project_find(name);
+	std::optional project_option = project_find(name);
 	if (!project_option) return;
 
 	const ProjectContent& content = (*project_option)->second;

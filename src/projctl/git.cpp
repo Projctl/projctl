@@ -55,7 +55,7 @@ void ProjCtl::status(const std::string &name) const {
 		return;
 	}
 
-	ProjectIteratorResult project = project_find(name);
+	std::optional project = project_find(name);
 	if (!project) return;
 	const ProjectContent& content = (*project)->second;
 	std::println("{}", status_one((*project)->first, content));
@@ -63,7 +63,7 @@ void ProjCtl::status(const std::string &name) const {
 
 
 void ProjCtl::git_commit(const std::string& name, std::string_view message) const {
-	ProjectIteratorResult project = project_find(name);
+	std::optional project = project_find(name);
 	if (!project) return;
 	const ProjectContent& content = (*project)->second;
 
@@ -94,7 +94,7 @@ void ProjCtl::git_automerge(const std::string& name, std::string_view message) c
 }
 
 void ProjCtl::git_push(const std::string& name) const {
-	ProjectIteratorResult project = project_find(name);
+	std::optional project = project_find(name);
 	if (!project) return;
 	const ProjectContent& content = (*project)->second;
 
@@ -104,7 +104,7 @@ void ProjCtl::git_push(const std::string& name) const {
 }
 
 void ProjCtl::git_push_branch(const std::string& name) const {
-	ProjectIteratorResult project = project_find(name);
+	std::optional project = project_find(name);
 	if (!project) return;
 	const ProjectContent& content = (*project)->second;
 
@@ -138,7 +138,7 @@ void ProjCtl::git_pull(const std::string& name) const {
 		for (std::future<std::string>& task : tasks) std::println("{}\n", task.get());
 		return;
 	}
-	ProjectIteratorResult project = project_find(name);
+	std::optional project = project_find(name);
 	if (!project) return;
 
 	std::println("{}", pull_one((*project)->first, (*project)->second));
@@ -161,14 +161,14 @@ void ProjCtl::git_fetch(const std::string& name) const {
 		for (std::future<std::string>& task : tasks) std::println("{}\n", task.get());
 		return;
 	}
-	ProjectIteratorResult project = project_find(name);
+	std::optional project = project_find(name);
 	if (!project) return;
 
 	std::println("{}", fetch_one((*project)->first, (*project)->second));
 }
 
 void ProjCtl::git_branch_list(const std::string& name) const {
-	ProjectIteratorResult project = project_find(name);
+	std::optional project = project_find(name);
 	if (!project) return;
 	const ProjectContent& content = (*project)->second;
 
@@ -178,7 +178,7 @@ void ProjCtl::git_branch_list(const std::string& name) const {
 }
 
 void ProjCtl::git_branch(const std::string& name, std::string_view branch) const {
-	ProjectIteratorResult project = project_find(name);
+	std::optional project = project_find(name);
 	if (!project) return;
 	const ProjectContent& content = (*project)->second;
 
