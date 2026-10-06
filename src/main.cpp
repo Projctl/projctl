@@ -22,6 +22,9 @@ enum class CommandOption {
 	IssueList,
 	IssueCreate,
 	AutoMerge,
+	RequestList,
+	RequestCreate,
+	RequestMerge,
 	Idk
 };
 
@@ -42,7 +45,11 @@ namespace {
 			case 'r':
 				if (command == "repos") return CommandOption::RepoList;
 				if (command == "run") return CommandOption::Run;
-				return CommandOption::Remove;
+				if (command == "reqs") return CommandOption::RequestList;
+				if (command == "rm" || command == "remove") return CommandOption::Remove;
+				if (command == "reqcreate") return CommandOption::RequestCreate;
+				if (command == "reqmerge") return CommandOption::RequestMerge;
+				return CommandOption::Idk;
 			case 'o':
 				return CommandOption::Open;
 			case 'b':
@@ -240,16 +247,40 @@ int main(const int argc, const char **argv) {
 										   }
 			case CommandOption::IssueCreate: {
 												 if (arg_iterator >= argc) {
-													 std::println("Yuo're missing some arguments!");
+													 std::println("You're missing some arguments!");
 													 continue;
 												 }
 												 proj_ctl.issue_create(std::string(argv[arg_iterator++]));
 												 continue;
 											 }
-			case CommandOption::Idk: {
-										 std::print("Unrecognized command");
-										 continue;
-									 }
+			case CommandOption::RequestCreate: {
+												   if (arg_iterator >= argc) {
+													   std::println("You're missing some arguments!");
+													   continue;
+												   }
+												   proj_ctl.request_create(std::string(argv[arg_iterator++]));
+												   continue;
+											   }
+			case CommandOption::RequestList: {
+												 if (arg_iterator >= argc) {
+													 std::println("You're missing some arguments");
+													 continue;
+												 }
+												 proj_ctl.request_list(std::string(argv[arg_iterator++]));
+												 continue;
+											 }
+			case CommandOption::RequestMerge: {
+												 if (arg_iterator >= argc) {
+													 std::println("You're missing some arguments");
+													 continue;
+												 }
+												 proj_ctl.request_merge(std::string(argv[arg_iterator++]));
+												 continue;
+											  }
+			default: {
+						 std::print("Unrecognized command");
+						 continue;
+					 }
 		}
 		if (command != "path")	std::print("\n\n");
 	}

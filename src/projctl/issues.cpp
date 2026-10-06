@@ -182,4 +182,5 @@ void ProjCtl::issue_create(const std::string& name) const {
 			std::println("{}No host found for {}{}", color_code(config.error_color), name, Style::RESET);
 			break;
 	}
+	if (!success) std::println("Failed to create issue for {}", name);
 }
