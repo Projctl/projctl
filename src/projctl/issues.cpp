@@ -150,3 +150,36 @@ void ProjCtl::issue_list(const std::string& name) const {
 	const ProjectContent& content = (*project_option)->second;
 	std::println("{}", issue_one((*project_option)->first, content));
 }
+
+void ProjCtl::issue_create(const std::string& name) const {
+	std::optional project_option = project_find(name);
+	if (!project_option) return;
+
+	const ProjectContent& content = (*project_option)->second;
+	std::expected<HostOption, std::string> host_option = GitInterface::host(content);
+	if (!host_option) {
+		std::println("{}Failed to get host {}{}", color_code(config.error_color), host_option.error(), Style::RESET);
+		return;
+	}
+	HostOption host = *host_option;
+
+	std::expected<std::string, std::string> remote_short_option = GitInterface::remote_short(content);
+	if (!remote_short_option) {
+		std::println("{}Failed to get short remote for {}{}", color_code(config.error_color), name, Style::RESET);
+		return;
+	}
+	std::string_view remote_short = *remote_short_option;
+
+	std::expected<void, std::string> success;
+	switch (host) {
+		case HostOption::GitHub:
+			success = gh_interface.issue_create(remote_short);
+			break;
+		case HostOption::GitLab:
+			success = glab_interface.issue_create(remote_short);
+			break;
+		case HostOption::Unknown:
+			std::println("{}No host found for {}{}", color_code(config.error_color), name, Style::RESET);
+			break;
+	}
+}

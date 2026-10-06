@@ -20,6 +20,7 @@ enum class CommandOption {
 	GStatus,
 	RepoList,
 	IssueList,
+	IssueCreate,
 	AutoMerge,
 	Idk
 };
@@ -55,6 +56,7 @@ namespace {
 				if (command == "git") return CommandOption::GStatus;
 				break;
 			case 'i':
+				if (command == "icreate") return CommandOption::IssueCreate;
 				return CommandOption::IssueList;
 		}
 		return CommandOption::Idk;
@@ -236,6 +238,14 @@ int main(const int argc, const char **argv) {
 											   proj_ctl.issue_list(std::string(argv[arg_iterator++]));
 											   continue;
 										   }
+			case CommandOption::IssueCreate: {
+												 if (arg_iterator >= argc) {
+													 std::println("Yuo're missing some arguments!");
+													 continue;
+												 }
+												 proj_ctl.issue_create(std::string(argv[arg_iterator++]));
+												 continue;
+											 }
 			case CommandOption::Idk: {
 										 std::print("Unrecognized command");
 										 continue;

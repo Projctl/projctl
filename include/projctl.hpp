@@ -51,5 +51,6 @@ class ProjCtl
 	void git_automerge(const std::string&, std::string_view) const;
 	void g_status() const;
 	void repo_list() const;
-	void issue_list(const std::string& name) const;
+	void issue_list(const std::string&) const;
+	void issue_create(const std::string&) const;
 };

@@ -11,5 +11,6 @@ class GitLabInterface {
 	bool installed() const;
 	bool authenticated() const;
 	std::expected<std::string, std::string> repo_list() const;
-	std::expected<std::vector<Issue>, std::string> issue_list(std::string_view remote_short) const;
+	std::expected<std::vector<Issue>, std::string> issue_list(std::string_view) const;
+	std::expected<void, std::string> issue_create(std::string_view) const;
 };
