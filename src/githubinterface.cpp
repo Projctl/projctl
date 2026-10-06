@@ -54,5 +54,30 @@ std::expected<void, std::string> GitHubInterface::issue_create(std::string_view 
 	SystemInterface::run_interactive(command);
 }
 
-std::expected<std::vector<Request>, std::string> GitHubInterface::request_list(std::string_view) const {
+std::expected<std::vector<Request>, std::string> GitHubInterface::request_list(std::string_view remote_short) const {
+	if (!installed()) return std::unexpected("GitHub not installed");
+
+	std::string command = std::format("CLICOLOR_FORCE=0 NO_COLOR=1 gh pr list --repo {} --json number,title,state,author,labels,createdAt,updatedAt", remote_short);
+	std::optional<std::string> output = SystemInterface::run(command);
+
+	if (!output) return std::unexpected(std::format("Failed to get GitHub pr list for repo {}", remote_short));
+	nlohmann::json json = nlohmann::json::parse(*output);
+	std::vector<Request> requests;
+	requests.reserve(json.size());
+	for (const nlohmann::json& json_request : json) {
+		Request request;
+		request.number = json_request.at("number").get<int>();
+		request.title = json_request.at("title").get<std::string>();
+		request.state = json_request.at("state").get<std::string>();
+		request.created = json_request.at("createdAt").get<std::string>();
+		request.updated = json_request.at("updatedAt").get<std::string>();
+
+		if (!json_request.at("author").is_null()) request.author = json_request.at("author").at("name").get<std::string>();
+
+		for (const nlohmann::json& label : json_request.at("labels")) request.labels.push_back(label.at("name").get<std::string>());
+
+		requests.push_back(std::move(request));
+	}
+
+	return requests;
 }

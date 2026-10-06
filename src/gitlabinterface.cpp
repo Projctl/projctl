@@ -2,6 +2,7 @@
 
 #include "systeminterface.hpp"
 #include <nlohmann/json.hpp>
+#include <print>
 
 bool GitLabInterface::installed() const {
 	return SystemInterface::run("command -v glab").has_value();
@@ -49,4 +50,10 @@ std::expected<void, std::string> GitLabInterface::issue_create(std::string_view 
 
 	std::string command = std::format("glab issue create --repo {}", remote_short);
 	SystemInterface::run_interactive(command);
+}
+
+std::expected<std::vector<Request>, std::string> GitLabInterface::request_list(std::string_view) const {
+	std::println("Todo");
+	std::vector<Request> requests;
+	return requests;
 }
