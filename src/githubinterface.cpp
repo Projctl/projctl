@@ -53,3 +53,6 @@ std::expected<void, std::string> GitHubInterface::issue_create(std::string_view 
 	std::string command = std::format("gh issue create --repo {}", remote_short);
 	SystemInterface::run_interactive(command);
 }
+
+std::expected<std::vector<Request>, std::string> GitHubInterface::request_list(std::string_view) const {
+}
