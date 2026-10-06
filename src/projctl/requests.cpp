@@ -103,7 +103,7 @@ void ProjCtl::request_list(const std::string& name) const {
 		if (!remote_short_option) return std::format("{}Failed to get short remote for {}{}", color_code(config.error_color), name, Style::RESET);
 		std::string_view remote_short = *remote_short_option;
 
-		std::string output = std::format("{}Issues for {}{}{}:\n", color_code(config.header_color), color_code(config.project_name_color), name, Style::RESET);
+		std::string output = std::format("{}Requests for {}{}{}:\n", color_code(config.header_color), color_code(config.project_name_color), name, Style::RESET);
 		std::expected<std::vector<Request>, std::string> command_output;
 		switch (host) {
 			case HostOption::GitHub:
@@ -143,4 +143,58 @@ void ProjCtl::request_list(const std::string& name) const {
 
 	const ProjectContent& content = (*project_option)->second;
 	std::println("{}", request_one((*project_option)->first, content));
+}
+
+void ProjCtl::request_create(const std::string& name) const {
+	std::optional project_option = project_find(name);
+	if (!project_option) return;
+
+	const ProjectContent& content = (*project_option)->second;
+	std::expected<HostOption, std::string> host_option = GitInterface::host(content);
+	if (!host_option) {
+		std::println("{}Failed to get host {}{}", color_code(config.error_color), host_option.error(), Style::RESET);
+		return;
+	}
+	HostOption host = *host_option;
+
+	std::expected<void, std::string> success;
+	switch (host) {
+		case HostOption::GitHub:
+			success = gh_interface.request_create(content.path.string());
+			break;
+		case HostOption::GitLab:
+			success = glab_interface.request_create(content.path.string());
+			break;
+		case HostOption::Unknown:
+			std::println("{}No host found for {}{}", color_code(config.error_color), name, Style::RESET);
+			break;
+	}
+}
+
+void ProjCtl::request_merge(const std::string& name) const {
+	std::optional project_option = project_find(name);
+	if (!project_option) return;
+
+	const ProjectContent& content = (*project_option)->second;
+	std::expected<HostOption, std::string> host_option = GitInterface::host(content);
+	if (!host_option) {
+		std::println("{}Failed to get host {}{}", color_code(config.error_color), host_option.error(), Style::RESET);
+		return;
+	}
+	HostOption host = *host_option;
+
+	std::expected<std::string, std::string> output;
+	switch (host) {
+		case HostOption::GitHub:
+			output = gh_interface.request_merge(content.path.string());
+			break;
+		case HostOption::GitLab:
+			output = glab_interface.request_merge(content.path.string());
+			break;
+		case HostOption::Unknown:
+			std::println("{}No host found for {}{}", color_code(config.error_color), name, Style::RESET);
+			break;
+	}
+	if (!output) std::println("Failed to merge request in {}\n{}", name, output.error());
+	std::println("{}{}{}{}", output ? color_code(config.tick_color) : color_code(config.error_color), output ? Style::TICK : Style::CROSS, output ? *output : output.error(), Style::RESET);
 }

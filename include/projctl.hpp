@@ -54,4 +54,6 @@ class ProjCtl
 	void issue_list(const std::string&) const;
 	void issue_create(const std::string&) const;
 	void request_list(const std::string&) const;
+	void request_create(const std::string&) const;
+	void request_merge(const std::string&) const;
 };

@@ -81,3 +81,20 @@ std::expected<std::vector<Request>, std::string> GitHubInterface::request_list(s
 
 	return requests;
 }
+
+std::expected<void, std::string> GitHubInterface::request_create(std::string_view path) const {
+	if (!installed()) return std::unexpected("GitHub not installed");
+
+	std::string command = std::format("cd {} && gh pr create", path);
+	SystemInterface::run_interactive(command);
+}
+
+std::expected<std::string, std::string> GitHubInterface::request_merge(std::string_view path) const {
+	if (!installed()) return std::unexpected("GitHub not installed");
+
+	std::string command = std::format("cd {} && gh pr merge --squash --delete-branch", path);
+	std::optional output = SystemInterface::run(command);
+	if (!output) return std::unexpected(std::format("Failed to run GitHub merge for repo {}", path));
+
+	return *output;
+}
