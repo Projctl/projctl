@@ -48,7 +48,7 @@ namespace {
 		if (command == "git")							return CommandOption::GStatus;
 		if (command == "issues" || command == "ilist")	return CommandOption::IssueList;
 		if (command == "icreate")						return CommandOption::IssueCreate;
-		if (command == "reqs")							return CommandOption::RequestList;
+		if (command == "reqs" || command == "reqlist")	return CommandOption::RequestList;
 		if (command == "reqcreate")						return CommandOption::RequestCreate;
 		if (command == "reqmerge")						return CommandOption::RequestMerge;
 		return CommandOption::Idk;
