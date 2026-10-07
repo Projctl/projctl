@@ -30,42 +30,27 @@ enum class CommandOption {
 
 namespace {
 	CommandOption get_option_from_command(const std::string& command) {
-		switch (command[0]) {
-			case 'l':
-				return CommandOption::List;
-			case 's':
-				return CommandOption::Status;
-			case 'a':
-				if (command == "automerge") return CommandOption::AutoMerge;
-				return CommandOption::Add;
-			case 'p':
-				if (command == "push") return CommandOption::Push;
-				if (command == "path") return CommandOption::Path;
-				return CommandOption::Pull;
-			case 'r':
-				if (command == "repos") return CommandOption::RepoList;
-				if (command == "run") return CommandOption::Run;
-				if (command == "reqs") return CommandOption::RequestList;
-				if (command == "rm" || command == "remove") return CommandOption::Remove;
-				if (command == "reqcreate") return CommandOption::RequestCreate;
-				if (command == "reqmerge") return CommandOption::RequestMerge;
-				return CommandOption::Idk;
-			case 'o':
-				return CommandOption::Open;
-			case 'b':
-				if (command == "branch") return CommandOption::Branch;
-				return CommandOption::Build;
-			case 'c':
-				return CommandOption::Commit;
-			case 'f':
-				return CommandOption::Fetch;
-			case 'g':
-				if (command == "git") return CommandOption::GStatus;
-				break;
-			case 'i':
-				if (command == "icreate") return CommandOption::IssueCreate;
-				return CommandOption::IssueList;
-		}
+		if (command == "list")							return CommandOption::List;
+		if (command == "status")						return CommandOption::Status;
+		if (command == "add")							return CommandOption::Add;
+		if (command == "automerge")						return CommandOption::AutoMerge;
+		if (command == "push")							return CommandOption::Push;
+		if (command == "path")							return CommandOption::Path;
+		if (command == "pull")							return CommandOption::Pull;
+		if (command == "repos")							return CommandOption::RepoList;
+		if (command == "run")							return CommandOption::Run;
+		if (command == "rm" || command == "remove")		return CommandOption::Remove;
+		if (command == "open")							return CommandOption::Open;
+		if (command == "branch")						return CommandOption::Branch;
+		if (command == "build")							return CommandOption::Build;
+		if (command == "commit")						return CommandOption::Commit;
+		if (command == "fetch")							return CommandOption::Fetch;
+		if (command == "git")							return CommandOption::GStatus;
+		if (command == "issues" || command == "ilist")	return CommandOption::IssueList;
+		if (command == "icreate")						return CommandOption::IssueCreate;
+		if (command == "reqs")							return CommandOption::RequestList;
+		if (command == "reqcreate")						return CommandOption::RequestCreate;
+		if (command == "reqmerge")						return CommandOption::RequestMerge;
 		return CommandOption::Idk;
 	}
 }

@@ -19,7 +19,16 @@ Also have $XDG_CONFIG_HOME and $XDG_CACHE_HOME set to some location<br>
 ./install.fish
 ```
 
-
+```c++
+if (command == "automerge")						return CommandOption::AutoMerge;
+if (command == "repos")							return CommandOption::RepoList;
+if (command == "git")							return CommandOption::GStatus;
+if (command == "issues" || command == "ilist")	return CommandOption::IssueList;
+if (command == "icreate")						return CommandOption::IssueCreate;
+if (command == "reqs")							return CommandOption::RequestList;
+if (command == "reqcreate")						return CommandOption::RequestCreate;
+if (command == "reqmerge")						return CommandOption::RequestMerge;
+```
 # Usage \[fast docs\]
 
 Overall concept
