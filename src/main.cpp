@@ -263,7 +263,7 @@ int main(const int argc, const char **argv) {
 												 continue;
 											  }
 			default: {
-						 std::print("Unrecognized command");
+						 std::println("Unrecognized command");
 						 continue;
 					 }
 		}
