@@ -1,17 +1,34 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(projctl VERSION 0.5.0 LANGUAGES CXX)
+project(projctl
+	VERSION 0.5.0
+	LANGUAGES CXX
+)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 
-add_executable(projctl
-    src/main.cpp
-)
+# Json
+
+find_package(nlohmann_json 3.12.0 QUIET)
+
+if(NOT nlohmann_json_FOUND)
+	include(FetchContent)
+
+	FetchContent_Declare(
+		nlohmann_json
+		GIT_REPOSITORY https://github.com/nlohmann/json.git
+		GIT_TAG v3.12.0
+	)
+
+	FetchContent_MakeAvailable(nlohmann_json)
+endif()
+
+
+# Projctl core
 
 add_library(projctl_core
 	src/projctl/core.cpp
@@ -28,25 +45,6 @@ add_library(projctl_core
 	src/config.cpp
 )
 
-
-find_package(nlohmann_json 3.12.0 QUIET)
-
-if(NOT nlohmann_json_FOUND)
-	include(FetchContent)
-
-	FetchContent_Declare(
-		nlohmann_json
-		GIT_REPOSITORY https://github.com/nlohmann/json.git
-		GIT_TAG v3.12.0
-	)
-
-	FetchContent_MakeAvailable(nlohmann_json)
-endif()
-
-target_link_libraries(projctl_core
-	PRIVATE
-		nlohmann_json::nlohmann_json
-)
 target_include_directories(projctl_core
 	PUBLIC
 		${PROJECT_SOURCE_DIR}/include
@@ -58,7 +56,19 @@ target_compile_options(projctl_core PRIVATE
 	-Wpedantic
 	-Wconversion
 	-Wsign-conversion
-	-O2
+	-Wshadow
+)
+
+target_link_libraries(projctl_core
+	PRIVATE
+		nlohmann_json::nlohmann_json
+)
+
+
+# Executable
+
+add_executable(projctl
+    src/main.cpp
 )
 
 target_link_libraries(projctl
@@ -73,5 +83,11 @@ target_compile_options(projctl PRIVATE
 	-Wshadow
 	-Wconversion
 	-Wsign-conversion
-	-O2
 )
+
+
+# Security
+
+include(CheckPIESupported)
+check_pie_supported()
+set_property(TARGET projctl PROPERTY POSITION_INDEPENDENT_CODE TRUE)
