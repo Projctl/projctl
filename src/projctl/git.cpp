@@ -71,6 +71,15 @@ void ProjCtl::git_commit(const std::string& name, std::string_view message) cons
 
 	std::println("{}{}{}{}", result ? color_code(config.tick_color) : color_code(config.error_color), result ? Style::TICK : Style::CROSS, result ? *result : result.error(), Style::RESET);
 }
+void ProjCtl::git_commit(const std::string& name) const {
+	std::optional project = project_find(name);
+	if (!project) return;
+	const ProjectContent& content = (*project)->second;
+
+	std::expected<std::string, std::string> result = GitInterface::commit(content);
+
+	std::println("{}{}{}{}", result ? color_code(config.tick_color) : color_code(config.error_color), result ? Style::TICK : Style::CROSS, result ? *result : result.error(), Style::RESET);
+}
 
 bool ProjCtl::git_merge(const std::string& name) const {
 	std::optional project = project_find(name);

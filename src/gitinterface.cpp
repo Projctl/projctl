@@ -139,6 +139,22 @@ std::expected<std::string, std::string> GitInterface::commit(const ProjectConten
 
 	return *add_output;
 }
+std::expected<std::string, std::string> GitInterface::commit(const ProjectContent& project) {
+	if (!is_repo(project)) [[unlikely]] return std::unexpected("Project is not git repository");
+
+	std::expected<std::string, std::string> add_output = add(project);
+	if (!add_output) [[unlikely]] return std::unexpected(add_output.error());
+
+	std::string command = std::format("git -C \"{}\" commit 2>&1", project.path.string());
+
+	int commit_output = SystemInterface::run_interactive(command);
+	if (commit_output != 0) return std::unexpected("Git commit failed");
+
+	add_output->append("\n");
+	add_output->append("Git commit completed successfully");
+
+	return *add_output;
+}
 
 std::expected<std::string, std::string> GitInterface::default_merge(const ProjectContent& project) {
 	if (!is_repo(project)) [[unlikely]] return std::unexpected("Not a git repo");

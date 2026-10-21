@@ -149,13 +149,17 @@ int main(const int argc, const char **argv) {
 													++arg_iterator;
 												}
 											}
-											if (arg_iterator + 1 >= argc) {
+											if (arg_iterator >= argc) {
 												std::println("You're missing some arguments!");
 												continue;
 											}
 											std::string name = argv[arg_iterator++];
-											std::string_view message = argv[arg_iterator++];
-											proj_ctl.git_commit(name, message);
+											if (arg_iterator == argc)
+												proj_ctl.git_commit(name);
+											else {
+												std::string_view message = argv[arg_iterator++];
+												proj_ctl.git_commit(name, message);
+											}
 											if (push) {
 												if(branch) proj_ctl.git_push_branch(name);
 												else proj_ctl.git_push(name);
