@@ -11,22 +11,26 @@ bool GitInterface::is_repo(const ProjectContent& project) {
 }
 
 std::expected<std::string, std::string> GitInterface::changes(const ProjectContent& project) {
-	if (!is_repo(project)) [[unlikely]] return std::unexpected("Not a git repo");
+	if (!is_repo(project)) [[unlikely]]
+		return std::unexpected("Not a git repo");
 
 	std::string command = std::format("git -C \"{}\" status --porcelain", project.path.string());
 	std::optional<std::string> output = SystemInterface::run(command);
 
-	if (!output) [[unlikely]] return std::unexpected("Git status failed");
+	if (!output) [[unlikely]]
+		return std::unexpected("Git status failed");
 	return *output;
 }
 
 std::expected<std::string, std::string> GitInterface::branch(const ProjectContent& project) {
-	if (!is_repo(project)) [[unlikely]] return std::unexpected("Not a git repo");
+	if (!is_repo(project))
+		[[unlikely]] return std::unexpected("Not a git repo");
 
 	std::string command = std::format("git -C \"{}\" branch --show-current", project.path.string());
 	std::optional<std::string> output = SystemInterface::run(command);
 
-	if (!output) [[unlikely]] return std::unexpected("Git remote failed");
+	if (!output) [[unlikely]]
+		return std::unexpected("Git remote failed");
 	return *output;
 }
 
@@ -140,15 +144,18 @@ std::expected<std::string, std::string> GitInterface::commit(const ProjectConten
 	return *add_output;
 }
 std::expected<std::string, std::string> GitInterface::commit(const ProjectContent& project) {
-	if (!is_repo(project)) [[unlikely]] return std::unexpected("Project is not git repository");
+	if (!is_repo(project)) [[unlikely]]
+		return std::unexpected("Project is not git repository");
 
 	std::expected<std::string, std::string> add_output = add(project);
-	if (!add_output) [[unlikely]] return std::unexpected(add_output.error());
+	if (!add_output) [[unlikely]]
+		return std::unexpected(add_output.error());
 
 	std::string command = std::format("git -C \"{}\" commit 2>&1", project.path.string());
 
 	int commit_output = SystemInterface::run_interactive(command);
-	if (commit_output != 0) return std::unexpected("Git commit failed");
+	if (commit_output != 0)
+		return std::unexpected("Git commit failed");
 
 	add_output->append("\n");
 	add_output->append("Git commit completed successfully");
